@@ -1,6 +1,9 @@
 from mininet.topo import Topo
 from mininet.cli import CLI
 from mininet.node import OVSSwitch
+from mininet.net import Mininet
+from mininet.node import Controller, RemoteController
+from mininet.log import setLogLevel, info
 
 def int2dpid( dpid ):
       try:
@@ -69,9 +72,18 @@ class MyTopo( Topo ):
   
 
 topos = { 'mytopo': ( lambda: MyTopo() ) }
-'''
-net=Mininet(topo=MyTopo(),controller=RemoteController('c0',ip='127.0.0.1',port=6633),switch=OVSSwitch)
-net.start()
-CLI(net)
-net.stop()
-'''
+
+def run():
+  net=Mininet(topo=MyTopo())
+  #,controller=RemoteController('c0',ip='127.0.0.1',port=6633),switch=OVSSwitch)
+
+  net.start()
+  print "Testing network connectivity....."
+  net.pingAll()
+  CLI(net)
+  net.stop()
+
+if __name__=='__main__':
+  setLogLevel('info')
+  run()
+
