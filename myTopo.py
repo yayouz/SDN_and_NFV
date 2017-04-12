@@ -74,8 +74,7 @@ class MyTopo( Topo ):
 topos = { 'mytopo': ( lambda: MyTopo() ) }
 
 def run():
-  net=Mininet(topo=MyTopo())
-  #,controller=RemoteController('c0',ip='127.0.0.1',port=6633),switch=OVSSwitch)
+  net=Mininet(topo=MyTopo(),controller=RemoteController('c0',ip='127.0.0.1',port=6633),switch=OVSSwitch)
 
   net.start()
   print "Testing network connectivity....."
