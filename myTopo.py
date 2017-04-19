@@ -4,7 +4,7 @@ from mininet.node import OVSSwitch
 from mininet.net import Mininet
 from mininet.node import Controller, RemoteController
 from mininet.log import setLogLevel, info
-
+from testing import autotest
 def int2dpid( dpid ):
       try:
         dpid = hex( dpid )[ 2: ]
@@ -78,7 +78,15 @@ def run():
 
   net.start()
   print "Testing network connectivity....."
-  net.pingAll()
+  #fw1=net.get('fw1')
+  #print ("the dpid of fw1 is"+fw1.dpid)
+  h1=net.get('h1')
+  result=h1.cmd('ping -c4 100.0.0.12')
+  print result
+  testing=autotest(net)
+  psuccess= testing.test(net)
+  print("***Result: %i%% correct transmition" % psuccess)
+ # net.pingAll()
   CLI(net)
   net.stop()
 
