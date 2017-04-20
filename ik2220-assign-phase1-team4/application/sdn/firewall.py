@@ -29,7 +29,7 @@ class firewall(LearningSwitch):
         msg = of.ofp_flow_mod()
         msg.match = of.ofp_match.from_packet(event.parsed,event.port)
         msg.actions.append(of.ofp_action_output(port=outport))
-        msg.idle_timeout = 2
+        msg.idle_timeout = 5
         msg.data = event.ofp
         msg.flags = of.OFPFF_SEND_FLOW_REM
         self.connection.send(msg)
@@ -66,7 +66,7 @@ class firewall(LearningSwitch):
             elif packet.find('udp') is not None:
                 udp = packet.find('udp')
                 dst_port = str(udp.dstport)
-                
+                src_port = str(udp.srcport)
                 """Traffic Towards DNS servers"""
                 if(
                     
@@ -80,15 +80,16 @@ class firewall(LearningSwitch):
                         self.add_flow(event, 2)
                     else:
                         self.add_flow(event,1)
-                    self.add_state((TCP,src_ip,dst_ip,-1,dst_port))
-                    
+                    self.add_state((UDP,src_ip,dst_ip,-1,dst_port))            
                 else:
+                    print(self.state)
                     print(dst_ip + " " + dst_port + " UDP Unacceptable Dropped!")
             elif packet.find('tcp') is not None:
                 tcp = packet.find('tcp')
                 dst_ip = str(ipv4.dstip)
                 src_ip = str(ipv4.srcip)
                 dst_port = str(tcp.dstport)
+                src_port = str(tcp.srcport)
                 
                 """Traffic towards Web Servers"""
                 if(
@@ -99,12 +100,11 @@ class firewall(LearningSwitch):
                      and
                         dst_port in "80")
                     ):
-                    
                     if event.port == 1:
                         self.add_flow(event, 2)
                     else:
                         self.add_flow(event,1)
-                    self.add_state((TCP,src_ip,dst_ip,-1,dst_port))
+                    self.add_state((TCP,src_ip,dst_ip,src_port,-1))
                     
                 else:
                     print(dst_ip + " " + dst_port + " TCP Unacceptable Dropped!")
@@ -214,14 +214,14 @@ class firewall2(firewall):
                 else:
                     firewall._handle_PacketIn(self,event)
             elif udp is not None:
-                port = str(udp.dstport)
+                port = str(udp.srcport)
                 if (UDP,dst_ip,src_ip,-1,port) in self.state:
                     self.add_flow(event,2)
                 else:
                     firewall._handle_PacketIn(self,event)
             elif tcp is not None:
-                port = str(tcp.dstport)
-                if (TCP,dst_ip,src_ip,-1,port) in self.state:
+                dst_port = str(tcp.dstport)
+                if (TCP,dst_ip,src_ip,dst_port,-1) in self.state:
                     self.add_flow(event,2)
                 else:
                     firewall._handle_PacketIn(self,event)
