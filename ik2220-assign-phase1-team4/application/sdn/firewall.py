@@ -68,6 +68,8 @@ class firewall(LearningSwitch):
                 dst_port = str(udp.dstport)
                 src_port = str(udp.srcport)
                 """Traffic Towards DNS servers"""
+                
+                print(src_ip+','+dst_ip+','+src_port+','+dst_port)
                 if(
                     
                         (dst_ip in "100.0.0.20"
@@ -151,13 +153,14 @@ class firewall1(firewall):
         
     def _handle_PacketIn(self, event):
         packet = event.parsed
+
         ipv4 = packet.find('ipv4')
         
         """Allow Parent to handle MAC-learning"""
         if packet.find('arp') is not None:
             self.parent._handle_PacketIn(event)
         
-        if ipv4 is not None:
+        elif ipv4 is not None:
             src_ip = str(ipv4.srcip)
             dst_ip = str(ipv4.dstip)
             icmp = packet.find('icmp')
@@ -167,15 +170,15 @@ class firewall1(firewall):
             if icmp is not None:
                 firewall._handle_PacketIn(self,event)
             elif udp is not None:
-                port = str(udp.dstport)
+                port = str(udp.srcport)
                 if (UDP,dst_ip,src_ip,-1,port) in self.state:
-                    self.add_flow(event,2)
+                    self.add_flow(event,1)
                 else:
                     firewall._handle_PacketIn(self,event)
             elif tcp is not None:
-                port = str(tcp.dstport)
-                if (TCP,dst_ip,src_ip,-1,port) in self.state:
-                    self.add_flow(event,2)
+                dst_port = str(tcp.dstport)
+                if (TCP,dst_ip,src_ip,dst_port,-1) in self.state:
+                    self.add_flow(event,1)
                 else:
                     firewall._handle_PacketIn(self,event)
 
