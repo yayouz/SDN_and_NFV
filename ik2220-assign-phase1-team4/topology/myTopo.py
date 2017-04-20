@@ -84,7 +84,7 @@ def run():
   result=h1.cmd('ping -c4 100.0.0.12')
   print result
   testing=autotest(net)
-  psuccess= testing.test(net)
+  psuccess= testing.test()
   print("***Result: %i%% correct transmition" % psuccess)
  # net.pingAll()
   CLI(net)
