@@ -50,6 +50,16 @@ class autotest(object):
             # error( 'could not parse iperf output: ' % iperfOutput )
              return False
 
+    def _parseDig(self, digOutput ):
+         r = r'(Got answer)'
+         m = re.findall( r, digOutput )
+         if m:
+             return True
+         else:
+             # was: raise Exception(...)
+            # error( 'could not parse iperf output: ' % iperfOutput )
+             return False
+
     def count(self,correct):
         if correct==True:
            self.total=self.total+1
@@ -88,24 +98,25 @@ class autotest(object):
 
 
         """UDP testing"""
-        ds1.cmd('iperf -u -s -p 53 &')
-        ds2.cmd('iperf -u -s -p 53 &')
-        ds3.cmd('iperf -u -s -p 53 &')
-        resUDP=h1.cmd('iperf -u -c 100.0.0.20 -p 53')
-        print resUDP
-        self.count(self. _parseIperf(resUDP))
+        ds1.cmd('python dns_server1.py &')
+        ds2.cmd('python dns_server2.py &')
+        ds3.cmd('python dns_server3.py &')
 
-        resUDP=h3.cmd('iperf -u -c 100.0.0.21 -p 53')
-        print resUDP
-        self.count(self. _parseIperf(resUDP))
+        resUDP=h1.cmd('dig @100.0.0.20')
+        #print resUDP
+        self.count(self. _parseDig(resUDP))
+
+        resUDP=h3.cmd('dig @100.0.0.21')
+        #print resUDP
+        self.count(self. _parseDig(resUDP))
 
         resUDP=h2.cmd('iperf -u -c 100.0.0.22 -p 40')
-        print resUDP
+        #print resUDP
         self.count(not self. _parseIperf(resUDP))
         
-        ws1.cmd('kill %while')
-        ws2.cmd('kill %while')
-        ws3.cmd('kill %while')
+        ws1.cmd('kill %python')
+        ws2.cmd('kill %python')
+        ws3.cmd('kill %python')
 
 
         """TCP testing"""
