@@ -1,7 +1,6 @@
 app:
-	sudo cp -r ./sdn/firewall.py ./sdn/controller.py /home/pox/ext/
-	python /home/pox/pox.py controller
+	sudo cp -r ./sdn/firewall.py ./sdn/controller.py ../../pox/ext/
+	sudo python ../../pox/pox.py controller
 
 clean:
-	sudo rm -rf /home/pox/ext/*.py
-	sudo pkill python
+	sudo rm -rf ../../pox/ext/*.py*

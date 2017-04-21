@@ -78,6 +78,11 @@ def run():
   net=Mininet(topo=MyTopo(),controller=RemoteController('c0',ip='127.0.0.1',port=6633),switch=OVSSwitch)
 
   net.start()
+  print "Testing network connectivity....."
+  print "Takes a long time, see result in already generated report"
+  testing=autotest(net)
+  psuccess= testing.test()
+  print("Total success rate: "+str(psuccess)+"%")
   CLI(net)
   net.stop()
 
