@@ -92,7 +92,8 @@ class firewall(LearningSwitch):
                         self.add_flow(event,1)
                     self.add_state((UDP,src_ip,dst_ip,src_port,dst_port))            
                 else:
-                    print('(UDP,'+src_ip+','+dst_ip + ","+ src_port + ',' + dst_port +')'+ " TCP Unacceptable Dropped!")
+                    print('(UDP,'+src_ip+','+dst_ip + ","+ src_port + ',' + dst_port +')'+ " Unacceptable Dropped!")
+                    print self.state
             elif packet.find('tcp') is not None:
                 tcp = packet.find('tcp')
                 
@@ -114,8 +115,7 @@ class firewall(LearningSwitch):
                     self.add_state((TCP,src_ip,dst_ip,src_port,dst_port))
                     
                 else:
-                    print('('+TCP+','+src_ip+','+dst_ip + ","+ src_port + ',' + dst_port +')'+ " TCP Unacceptable Dropped!")
-                    print("Current States:" + self.state)
+                    print("(TCP,"+str(src_ip)+','+str(dst_ip) + ","+ str(src_port) + ',' + str(dst_port) +')'+ " Unacceptable Dropped!")
 
     def _handle_FlowRemoved(self,event):
         
@@ -171,13 +171,13 @@ class firewall1(firewall):
             elif udp is not None:
                 src_port, dst_port = self.extract_ports(udp)
                 if (UDP,dst_ip,src_ip,dst_port,src_port) in self.state:
-                    self.add_flow(event,2)
+                    self.add_flow(event,1)
                 else:
                     firewall._handle_PacketIn(self,event)
             elif tcp is not None:
-                src_port,dst_port = self.extract_ports(packet)
+                src_port,dst_port = self.extract_ports(tcp)
                 if (TCP,dst_ip,src_ip,dst_port,src_port) in self.state:
-                    self.add_flow(event,2)
+                    self.add_flow(event,1)
                 else:
                     firewall._handle_PacketIn(self,event)
             return
@@ -217,7 +217,7 @@ class firewall2(firewall):
                 else:
                     firewall._handle_PacketIn(self,event)
             elif tcp is not None:
-                src_port,dst_port = self.extract_ports(packet)
+                src_port,dst_port = self.extract_ports(tcp)
                 if (TCP,dst_ip,src_ip,dst_port,src_port) in self.state:
                     self.add_flow(event,2)
                 else:

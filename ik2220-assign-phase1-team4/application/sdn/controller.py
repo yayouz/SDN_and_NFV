@@ -11,7 +11,7 @@ class controller(object):
     
     def _handle_ConnectionUp(self,event):
         switch_id = dpid_to_str(event.dpid)
-
+        print("Switch %s came up",switch_id)
         #Switches
         if (
             #Switch 1
@@ -32,17 +32,22 @@ class controller(object):
             or switch_id in "00-00-00-00-00-0d"
             #NAPT
             or switch_id in "00-00-00-00-00-1f"):
-            
+            print("Network entity is a switch",switch_id)
             LearningSwitch(event.connection,False)
             
         #Firewall 1
         elif switch_id in "00-00-00-00-00-15":
+            print("Network entity is a Firewall Type 1",switch_id)
             firewall1(event.connection,False)
         #Firewall 2
         elif switch_id in "00-00-00-00-00-16":
+            print("Network entity is a Firewall Type 2",switch_id)
             firewall2(event.connection,False)
         else:
-            log.debug("Unknown Network Entity")
+            log.debug("Network entity is an unknown entity", switch_id)
+
+    def _handle_ConnectionDown(self,event):
+        print("Switch went down",dpid_to_str(event.dpid))
 
 def launch():
     log.debug("Started")
