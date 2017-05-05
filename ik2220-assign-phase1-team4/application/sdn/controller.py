@@ -4,7 +4,6 @@ from pox.lib.util import dpid_to_str
 from firewall import firewall1, firewall2
 from subprocess import Popen
 
-
 path = "./ext/"
 
 class controller(object):
