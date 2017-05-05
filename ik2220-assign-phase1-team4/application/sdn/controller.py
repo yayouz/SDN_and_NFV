@@ -8,6 +8,7 @@ from subprocess import Popen
 path = "./ext/"
 
 class controller(object):
+    
     def __init__(self):
         core.openflow.addListeners(self)
     
