@@ -19,7 +19,7 @@ ETH_DMZ :: Classifier(12/0806 20/0001, 12/0806 20/0002, 12/0800,-);
 IP_PRZ :: IPClassifier(icmp,tcp or udp,-)
 IP_DMZ :: IPClassifier(icmp,tcp or udp,-)
 
-IP_RW 	:: IPRewriter(pattern 100.0.0.1 1024-65535# - - 0 1, drop);
+IP_RW 	:: IPRewriter(pattern 100.0.0.1 0-65535# - - 0 1, drop);
 ICMP_RW 	:: ICMPPingRewriter(pattern 100.0.0.1 - 0-65535# 0 1, drop);
 
 // Flow from Public Zone
