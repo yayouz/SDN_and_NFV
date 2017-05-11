@@ -60,7 +60,6 @@ src_eth1 ->
 					Discard;
 
 
-
 src_eth2 ->
 		
 			//Received an ARP Query
