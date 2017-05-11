@@ -16,8 +16,8 @@ ARPR_eth2 :: ARPResponder($VIP/24 00:00:00:22:20:$MAC1) -> dst_eth2;
 ETH_Z1 :: Classifier(12/0806 20/0001, 12/0806 20/0002, 12/0800,-);
 ETH_Z2 :: Classifier(12/0806 20/0001, 12/0806 20/0002, 12/0800,-);
 
-IP_Z1 :: IPClassifier($proto and $port,-)
-IP_Z2 :: IPClassifier(icmp,$proto and $port,-)
+IP_Z1 :: IPClassifier(src $proto port $port,-)
+IP_Z2 :: IPClassifier(icmp,dst $proto port $port,-)
 
 SERVERS		:: RoundRobinIPMapper($VIP - $DIP0 - 0 1,$VIP - $DIP1 - 0 1,$VIP - $DIP2 - 0 1);
 IP_RW 		:: IPRewriter(SERVERS, pattern $VIP 0-65535 - - 1 0);
