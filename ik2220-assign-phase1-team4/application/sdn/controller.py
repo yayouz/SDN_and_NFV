@@ -4,10 +4,11 @@ from pox.lib.util import dpid_to_str
 from firewall import firewall1, firewall2
 from subprocess import Popen
 
+log = core.getLogger()
+
 path = "./ext/"
 
 class controller(object):
-    
     def __init__(self):
         core.openflow.addListeners(self)
     
@@ -43,17 +44,18 @@ class controller(object):
         #Load balancer 1 for DNS servers
         elif switch_id in "00-00-00-00-00-0b":
             print("Network entity is Load balancer DNS Servers",switch_id)
-            Popen(["click",path+"lb.click"])
+            Popen(["click",path+"lb.click","Name=lb1","MAC0=03","port=53","proto=udp","MAC1=04","VIP=100.0.0.25","DIP0=100.0.0.20","DIP1=100.0.0.21","DIP2=100.0.0.22"])
             
         #Load balancer 2 for Web servers
         elif switch_id in "00-00-00-00-00-0c":
             print("Network entity is Load Balancer Web Servers",switch_id)
-            Popen(["click",path+"lb.click"])
+            Popen(["click",path+"lb.click","Name=lb2","MAC0=05","port=80","proto=tcp","MAC1=06","VIP=100.0.0.45","DIP0=100.0.0.40","DIP1=100.0.0.41","DIP2=100.0.0.42"])
             
         #IDS server
         elif switch_id in "00-00-00-00-00-0d":
             print("Network entity is IDS",switch_id)
-            Popen(["click",path+"ids.click"])
+            LearningSwitch(event.connection,False)
+            #Popen(["click",path+"ids.click"])
             
         #NAPT
         elif switch_id in "00-00-00-00-00-1f":
