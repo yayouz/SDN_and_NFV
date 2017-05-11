@@ -1,0 +1,12 @@
+To use the http server:
+
+on the server side:
+    sudo python Httpserver<X>.py 80  //replace X with the web server number
+
+on the client side:
+Send a GET request:
+    curl http://localhost
+Send a POST request:
+    curl -d "foo=bar&bin=baz" http://localhost
+Send a HEAD request:
+    curl -I http://localhost

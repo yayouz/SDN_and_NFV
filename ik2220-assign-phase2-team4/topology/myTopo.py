@@ -28,8 +28,8 @@ class MyTopo( Topo ):
         # Add hosts and switches
         Host1 = self.addHost( 'h1',ip='100.0.0.10/24' )
         Host2 = self.addHost( 'h2',ip='100.0.0.11/24'  )
-        Host3 = self.addHost( 'h3',ip='10.0.0.50/24'  )
-        Host4 = self.addHost( 'h4',ip='10.0.0.51/24'  )
+        Host3 = self.addHost( 'h3',ip='10.0.0.50/24')
+        Host4 = self.addHost( 'h4',ip='10.0.0.51/24' )
         Insp = self.addHost('insp',ip='100.0.0.30/24')
         DNS1 = self.addHost( 'ds1',ip='100.0.0.20/24' )
         DNS2 = self.addHost( 'ds2',ip='100.0.0.21/24' )
@@ -78,6 +78,11 @@ topos = { 'mytopo': ( lambda: MyTopo() ) }
 
 def run():
   net=Mininet(topo=MyTopo(),controller=RemoteController('c0',ip='127.0.0.1',port=6633),switch=OVSSwitch)
+
+  h3 = net.getNodeByName('h3')
+  h3.cmd('route add default gw 10.0.0.1 dev h3-eth0')
+  h4 = net.getNodeByName('h4')
+  h4.cmd('route add default gw 10.0.0.1 dev h4-eth0') 
 
   net.start()
   CLI(net)
