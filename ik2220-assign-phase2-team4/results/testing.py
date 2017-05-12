@@ -311,7 +311,7 @@ class autotest(object):
         self.ws1.cmd("sudo python Httpserver.py 80 &")
         self.ws2.cmd("sudo python Httpserver2.py 80 &")
         self.ws3.cmd("sudo python Httpserver3.py 80 &")
-        self.insp.cmd("tcpdump -i eth0 -w insp.pcap &")
+        self.insp.cmd("tcpdump -w insp.pcap &")
         print 'TCP Testing (Only port 80)'
         print '(SRC -> DST Port X) Success!/Failed!'
         time.sleep(5)
