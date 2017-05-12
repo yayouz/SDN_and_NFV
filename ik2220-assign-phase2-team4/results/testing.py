@@ -1,7 +1,7 @@
 import os
 import re
 import signal
-from time import sleep
+import time
 
 class autotest(object):
     def __init__ (self,net):
@@ -18,13 +18,14 @@ class autotest(object):
         self.ws1 = self.net.get('ws1')
         self.ws2 = self.net.get('ws2')
         self.ws3 = self.net.get('ws3')
-        self.file = open('Phase_1_Report','w')
+        self.insp = self.net.get('insp')
+        self.file = open('Phase_2_Report','w')
     
     def _parsePing(self, pingOutput ):
         "Parse ping output and return packets sent, received."
         # Check for downed link
         if 'connect: Network is unreachable' in pingOutput:
-            return (1, 0)
+            return False
         r = r'(\d+) packets transmitted, (\d+) received'
         m = re.search( r, pingOutput )
         if m is None:
@@ -32,9 +33,9 @@ class autotest(object):
             error( '*** Error: could not parse ping output: %s\n' %
                    pingOutput )
             
-            return (1, 0)
+            return False
         sent, received = int( m.group( 1 ) ), int( m.group( 2 ) )
-        if sent==received:
+        if received!=0:
           return True
         else:
           return False
@@ -46,7 +47,7 @@ class autotest(object):
             return True
 
     def _parseWget(self, wgetOutput ):
-         r = r'(200 OK)'
+         r = r'(POST)'
          m = re.findall( r, wgetOutput )
          if m:
              return True
@@ -65,255 +66,175 @@ class autotest(object):
     def ping(self):
         print 'Ping Test (SRC -> DST Success!/Failed!)'
         print 'H1 -> H3 ',
-        t1 = self.h1.cmd('ping -c 1 100.0.0.50')
+        t1 = self.h1.cmd('ping -c 1 10.0.0.50')
         if self._parsePing(t1):
             print 'Success!'
         else:
             print 'Failed!'
-        print 'H2 -> H3',
-        t2 = self.h2.cmd('ping -c 1 100.0.0.50')
+        print 'H1 -> LoadBalance1',
+        t2 = self.h1.cmd('ping -c 6 100.0.0.25')
         if self._parsePing(t2):
             print 'Success!'
         else:
             print 'Failed!'
-        print 'H1 -> H4',
-        t3 = self.h1.cmd('ping -c 1 100.0.0.51')
+        print 'H1 -> LoadBalance2',
+        t3 = self.h1.cmd('ping -c 2 100.0.0.45')
         if self._parsePing(t3):
             print 'Success!'
         else:
             print 'Failed!'
-        print 'H2 -> H4',
-        t4 = self.h2.cmd('ping -c 1 100.0.0.51')
+        print 'H2 -> H3',
+        t4 = self.h2.cmd('ping -c 1 10.0.0.50')
         if self._parsePing(t4):
             print 'Success!'
         else:
             print 'Failed!'
-        
-        print 'DNS1 -> H3',
-        t5 = self.ds1.cmd('ping -c 1 100.0.0.50')
+        print 'H1 -> H4',
+        t5 = self.h1.cmd('ping -c 1 10.0.0.51')
         if self._parsePing(t5):
             print 'Success!'
         else:
             print 'Failed!'
-        print 'DNS2 -> H3',
-        t6 = self.ds2.cmd('ping -c 1 100.0.0.50')
+        print 'H2 -> H4',
+        t6 = self.h2.cmd('ping -c 1 10.0.0.51')
         if self._parsePing(t6):
             print 'Success!'
         else:
             print 'Failed!'
-        print 'DNS3 -> H3',
-        t7 = self.ds3.cmd('ping -c 1 100.0.0.50')
+        print 'H2 -> LoadBalance1',
+        t7 = self.h2.cmd('ping -c 2 100.0.0.25')
         if self._parsePing(t7):
             print 'Success!'
         else:
             print 'Failed!'
-        print 'DNS1 -> H4',
-        t8 = self.ds1.cmd('ping -c 1 100.0.0.51')
+        print 'H2 -> LoadBalance2',
+        t8 = self.h2.cmd('ping -c 2 100.0.0.45')
         if self._parsePing(t8):
-            print 'Success!'
-        else:
-            print 'Failed!'
-        print 'DNS2 -> H4',
-        t9 = self.ds2.cmd('ping -c 1 100.0.0.51')
-        if self._parsePing(t9):
-            print 'Success!'
-        else:
-            print 'Failed!'
-        print 'DNS3 -> H4',
-        t10 = self.ds3.cmd('ping -c 1 100.0.0.51')
-        if self._parsePing(t10):
-            print 'Success!'
-        else:
-            print 'Failed!'
-        
-        print 'Web1 -> H3',
-        t11 = self.ws1.cmd('ping -c 1 100.0.0.50')
-        if self._parsePing(t11):
-            print 'Success!'
-        else:
-            print 'Failed!'
-        print 'Web2 -> H3',
-        t12 = self.ws1.cmd('ping -c 1 100.0.0.50')
-        if self._parsePing(t12):
-            print 'Success!'
-        else:
-            print 'Failed!'
-        print 'Web3 -> H3',
-        t13 = self.ws1.cmd('ping -c 1 100.0.0.50')
-        if self._parsePing(t13):
-            print 'Success!'
-        else:
-            print 'Failed!'
-        print 'Web1 -> H4',
-        t14 = self.ws2.cmd('ping -c 1 100.0.0.51')
-        if self._parsePing(t14):
-            print 'Success!'
-        else:
-            print 'Failed!'
-        print 'Web2 -> H4',
-        t15 = self.ws2.cmd('ping -c 1 100.0.0.51')
-        if self._parsePing(t15):
-            print 'Success!'
-        else:
-            print 'Failed!'
-        print 'Web3 -> H4',
-        t16 = self.ws2.cmd('ping -c 1 100.0.0.51')
-        if self._parsePing(t16):
             print 'Success!'
         else:
             print 'Failed!'
         
         print 'H3 -> H1',
-        t18 = self.h3.cmd('ping -c 1 100.0.0.10')
-        if self._parsePing(t18):
+        t9 = self.h3.cmd('ping -c 1 100.0.0.10')
+        if self._parsePing(t9):
             print 'Success!'
         else:
             print 'Failed!'
         print 'H3 -> H2',
-        t19 = self.h3.cmd('ping -c 1 100.0.0.11')
-        if self._parsePing(t19):
+        t10 = self.h3.cmd('ping -c 1 100.0.0.11')
+        if self._parsePing(t10):
             print 'Success!'
         else:
             print 'Failed!'
-        print 'H3 -> DNS1',
-        t20 = self.h3.cmd('ping -c 1 100.0.0.20')
-        if self._parsePing(t20):
-            print 'Success!'
-        else:
-            print 'Failed!'
-        print 'H3 -> DNS2',
-        t21 = self.h3.cmd('ping -c 1 100.0.0.21')
-        if self._parsePing(t21):
-            print 'Success!'
-        else:
-            print 'Failed!'
-        print 'H3 -> DNS3',
-        t22 = self.h3.cmd('ping -c 1 100.0.0.22')
-        if self._parsePing(t22):
-            print 'Success!'
-        else:
-            print 'Failed!'
-        print 'H3 -> Web1',
-        t23 = self.h3.cmd('ping -c 1 100.0.0.40')
-        if self._parsePing(t23):
-            print 'Success!'
-        else:
-            print 'Failed!'
-        print 'H3 -> Web2',
-        t24 = self.h3.cmd('ping -c 1 100.0.0.41')
-        if self._parsePing(t24):
-            print 'Success!'
-        else:
-            print 'Failed!'
-        print 'H3 -> Web3',
-        t25 = self.h3.cmd('ping -c 1 100.0.0.42')
-        if self._parsePing(t25):
-            print 'Success!'
-        else:
-            print 'Failed!'
+        
         print 'H4 -> H1',
-        t26 = self.h4.cmd('ping -c 1 100.0.0.10')
-        if self._parsePing(t26):
+        t11 = self.h4.cmd('ping -c 1 100.0.0.10')
+        if self._parsePing(t11):
             print 'Success!'
         else:
             print 'Failed!'
         print 'H4 -> H2',
-        t27 = self.h4.cmd('ping -c 1 100.0.0.11')
-        if self._parsePing(t27):
+        t12 = self.h4.cmd('ping -c 1 100.0.0.11')
+        if self._parsePing(t12):
             print 'Success!'
         else:
             print 'Failed!'
+        
         print 'H4 -> H3',
-        t28 = self.h4.cmd('ping -c 1 100.0.0.50')
-        if self._parsePing(t28):
+        t13 = self.h4.cmd('ping -c 1 10.0.0.50')
+        if self._parsePing(t13):
             print 'Success!'
         else:
             print 'Failed!'
         print 'H3 -> H4',
-        t29 = self.h3.cmd('ping -c 1 100.0.0.51')
-        if self._parsePing(t29):
+        t14 = self.h3.cmd('ping -c 1 10.0.0.51')
+        if self._parsePing(t14):
             print 'Success!'
         else:
             print 'Failed!'
         print 'H1 -> H2',
-        t30 = self.h1.cmd('ping -c 1 100.0.0.11')
-        if self._parsePing(t30):
+        t15 = self.h1.cmd('ping -c 1 100.0.0.11')
+        if self._parsePing(t15):
             print 'Success!'
         else:
             print 'Failed!'
         print 'H2 -> H1',
-        t31 = self.h2.cmd('ping -c 1 100.0.0.10')
-        if self._parsePing(t31):
+        t16 = self.h2.cmd('ping -c 1 100.0.0.10')
+        if self._parsePing(t16):
             print 'Success!'
         else:
             print 'Failed!'
-        
-        print "Storing data in Phase_1_Report"
+        print 'H3 -> LoadBalance1',
+        t17 = self.h3.cmd('ping -c 2 100.0.0.25')
+        if self._parsePing(t17):
+            print 'Success!'
+        else:
+            print 'Failed!'
+        print 'H3 -> LoadBalance2',
+        t18 = self.h3.cmd('ping -c 2 100.0.0.45')
+        if self._parsePing(t18):
+            print 'Success!'
+        else:
+            print 'Failed!'
+        print 'H4 -> LoadBalance1',
+        t19 = self.h4.cmd('ping -c 2 100.0.0.25')
+        if self._parsePing(t19):
+            print 'Success!'
+        else:
+            print 'Failed!'
+        print 'H4 -> LoadBalance2',
+        t20 = self.h4.cmd('ping -c 2 100.0.0.45')
+        if self._parsePing(t20):
+            print 'Success!'
+        else:
+            print 'Failed!'
+
+        print "Storing data in Phase_2_Report"
         
         self.file.write("Pinging H1 to H3\n")
         self.file.write(t1)
-        self.file.write("Pinging H2 to H3\n")
+        self.file.write("Pinging H1 to LoadBalancer1\n")
         self.file.write(t2)
-        self.file.write("Pinging H1 to H4\n")
+        self.file.write("Pinging H1 to LoadBalancer2\n")
         self.file.write(t3)
-        self.file.write("Pinging H2 to H4\n")
+        self.file.write("Pinging H2 to H3\n")
         self.file.write(t4)
         
         
-        self.file.write("Pinging DNS1 to H3\n")
+        self.file.write("Pinging H1 to H4\n")
         self.file.write(t5)
-        self.file.write("Pinging DNS1 to H3\n")
+        self.file.write("Pinging H2 to H4\n")
         self.file.write(t6)
-        self.file.write("Pinging DNS1 to H3\n")
+        self.file.write("Pinging H2 to LoadBalancer1\n")
         self.file.write(t7)
-        self.file.write("Pinging DNS2 to H4\n")
+        self.file.write("Pinging H2 to LoadBalancer2\n")
         self.file.write(t8)
-        self.file.write("Pinging DNS2 to H4\n")
+        self.file.write("Pinging H3 to H1\n")
         self.file.write(t9)
-        self.file.write("Pinging DNS2 to H4\n")
+        self.file.write("Pinging H3 to H2\n")
         self.file.write(t10)
         
-        self.file.write("Pinging Web1 to H3\n")
+        self.file.write("Pinging H4 to H1\n")
         self.file.write(t11)
-        self.file.write("Pinging Web2 to H3\n")
+        self.file.write("Pinging H4 to H2\n")
         self.file.write(t12)
-        self.file.write("Pinging Web3 to H3\n")
+        self.file.write("Pinging H4 to H3\n")
         self.file.write(t13)
-        self.file.write("Pinging Web1 to H4\n")
+        self.file.write("Pinging H3 to H4\n")
         self.file.write(t14)
-        self.file.write("Pinging Web2 to H4\n")
+        self.file.write("Pinging H1 to H2\n")
         self.file.write(t15)
-        self.file.write("Pinging Web3 to H4\n")
+        self.file.write("Pinging H2 to H1\n")
         self.file.write(t16)
         
-        self.file.write("Pinging H3 to H1\n")
+        self.file.write("Pinging H3 to LoadBalancer1\n")
+        self.file.write(t17)
+        self.file.write("Pinging H3 to LoadBalancer2\n")
         self.file.write(t18)
-        self.file.write("Pinging H3 to H2\n")
+        self.file.write("Pinging H4 to LoadBalancer1\n")
         self.file.write(t19)
-        self.file.write("Pinging H3 to DNS1\n")
+        self.file.write("Pinging H4 to LoadBalancer2\n")
         self.file.write(t20)
-        self.file.write("Pinging H3 to DNS2\n")
-        self.file.write(t21)
-        self.file.write("Pinging H3 to DNS3\n")
-        self.file.write(t22)
-        self.file.write("Pinging H3 to Web1\n")
-        self.file.write(t23)
-        self.file.write("Pinging H3 to Web2\n")
-        self.file.write(t24)
-        self.file.write("Pinging H3 to Web3\n")
-        self.file.write(t25)
-        self.file.write("Pinging H3 to H1\n")
-        self.file.write(t26)
-        self.file.write("Pinging H4 to H2\n")
-        self.file.write(t27)
-        self.file.write("Pinging H4 to H3\n")
-        self.file.write(t28)
-        self.file.write("Pinging H3 to H4\n")
-        self.file.write(t29)
-        self.file.write("Pinging H1 to H2\n")
-        self.file.write(t30)
-        self.file.write("Pinging H2 to Web1\n")
-        self.file.write(t31)
             
         print "Calculating Success Rate"
         
@@ -367,6 +288,9 @@ class autotest(object):
         if self._parsePing(t16):
             x=x+1
             self.count(True)
+        if self._parsePing(t17):
+            x=x+1
+            self.count(True)
         if self._parsePing(t18):
             x=x+1
             self.count(True)
@@ -376,236 +300,242 @@ class autotest(object):
         if self._parsePing(t20):
             x=x+1
             self.count(True)
-        if self._parsePing(t21):
-            x=x+1
-            self.count(True)
-        if self._parsePing(t22):
-            x=x+1
-            self.count(True)
-        if self._parsePing(t23):
-            x=x+1
-            self.count(True)
-        if self._parsePing(t24):
-            x=x+1
-            self.count(True)
-        if self._parsePing(t25):
-            x=x+1
-            self.count(True)
-        if self._parsePing(t26):
-            x=x+1
-            self.count(True)
-        if self._parsePing(t27):
-            x=x+1
-            self.count(True)
-        if self._parsePing(t28):
-            x=x+1
-            self.count(True)
-        if self._parsePing(t29):
-            x=x+1
-            self.count(True)
-        if self._parsePing(t30):
-            x=x+1
-            self.count(True)
-        if self._parsePing(t31):
-            x=x+1
-            self.count(True)
         
         print 'Ping Tests Done'
         
-        print "Succes rate: " + str(x)+"/31"
-        print "Expected rate: 8/31"
+        print "Succes rate: " + str(x)+"/20"
+        print "Expected rate: 16/20"
 
 
     def http(self):
-        self.ws1.cmd("python -m SimpleHTTPServer 80 &")
-        
+        self.ws1.cmd("sudo python Httpserver.py 80 &")
+        self.ws2.cmd("sudo python Httpserver2.py 80 &")
+        self.ws3.cmd("sudo python Httpserver3.py 80 &")
+        self.insp.cmd("tcpdump -i eth0 -w insp.pcap &")
         print 'TCP Testing (Only port 80)'
         print '(SRC -> DST Port X) Success!/Failed!'
-        
-        print 'H1 -> Web Port 80 ',
-        t1 = self.h1.cmd('wget -T 3 --tries=1 100.0.0.40:80')
+        time.sleep(5)
+
+        print 'H1 -> Web Port 80 method POST',
+        t1 = self.h1.cmd('curl --max-time 5 -d "foo=bar&bin=baz" http://100.0.0.45:80')
         if self._parseWget(t1):
             print 'Success!'
         else:
             print 'Failed!'
 
-        print 'H1 -> Web Port 22 ',
-        t2 = self.h1.cmd('wget -T 3 --tries=1 100.0.0.40:22')
+        print 'H1 -> Web Port 22 method POST',
+        t2 = self.h1.cmd('curl --max-time 5 -d "foo=bar&bin=baz" http://100.0.0.45:22')
         if self._parseWget(t2):
             print 'Success!'
         else:
             print 'Failed!'
             
-        print 'H1 -> Web Port 53 ',
-        t3 = self.h1.cmd('wget -T 3 --tries=1 100.0.0.40:53')
+        print 'H1 -> Web Port 53 method POST',
+        t3 = self.h1.cmd('curl --max-time 5 -d "foo=bar&bin=baz" http://100.0.0.45:53')
         if self._parseWget(t3):
             print 'Success!'
         else:
             print 'Failed!'
             
-        print 'H1 -> Web Port 88 ',
-        t4 = self.h1.cmd('wget -T 3 --tries=1 100.0.0.40:88')
+        print 'H1 -> Web Port 88 method POST',
+        t4 = self.h1.cmd('curl --max-time 5 -d "foo=bar&bin=baz" http://100.0.0.45:88')
         if self._parseWget(t4):
             print 'Success!'
         else:
             print 'Failed!'
             
-        print 'H1 -> Web Port 115 ',
-        t5 = self.h1.cmd('wget -T 3 --tries=1 100.0.0.40:115')
+        print 'H1 -> Web Port 115 method POST',
+        t5 = self.h1.cmd('curl --max-time 5 -d "foo=bar&bin=baz" http://100.0.0.45:115')
         if self._parseWget(t5):
             print 'Success!'
         else:
             print 'Failed!'
             
-        print 'H1 -> Web Port 123 ',
-        t6 = self.h1.cmd('wget -T 3 --tries=1 100.0.0.40:123')
+        print 'H1 -> Web Port 123  method POST',
+        t6 = self.h1.cmd('curl --max-time 5 -d "foo=bar&bin=baz" http://100.0.0.45:123')
         if self._parseWget(t6):
             print 'Success!'
         else:
             print 'Failed!'
             
-        print 'H1 -> Web Port 156 ',
-        t7 = self.h1.cmd('wget -T 3 --tries=1 100.0.0.40:156')
+        print 'H1 -> Web Port 156  method POST',
+        t7 = self.h1.cmd('curl --max-time 5 -d "foo=bar&bin=baz" http://100.0.0.45:156')
         if self._parseWget(t7):
             print 'Success!'
         else:
             print 'Failed!'
             
-        print 'H1 -> Web Port 199 ',
-        t8 = self.h1.cmd('wget -T 3 --tries=1 100.0.0.40:199')
+        print 'H1 -> Web Port 199 method POST',
+        t8 = self.h1.cmd('curl --max-time 5 -d "foo=bar&bin=baz" http://100.0.0.45:199')
         if self._parseWget(t8):
             print 'Success!'
         else:
             print 'Failed!'
             
-        print 'H1 -> Web Port 220 ',
-        t9 = self.h1.cmd('wget -T 3 --tries=1 100.0.0.40:220')
+        print 'H1 -> Web Port 220 method POST',
+        t9 = self.h1.cmd('curl --max-time 5 -d "foo=bar&bin=baz" http://100.0.0.45:220')
         if self._parseWget(t9):
             print 'Success!'
         else:
             print 'Failed!'
             
-        print 'H1 -> Web Port 443 ',
-        t10 = self.h1.cmd('wget -T 3 --tries=1 100.0.0.40:443')
+        print 'H1 -> Web Port 443 method POST',
+        t10 = self.h1.cmd('curl --max-time 5 -d "foo=bar&bin=baz" http://100.0.0.45:443')
         if self._parseWget(t10):
             print 'Success!'
         else:
             print 'Failed!'
         
-        print 'H3 -> Web Port 80 ',
-        t11 = self.h3.cmd('wget -T 3 --tries=1 100.0.0.40:80')
+        print 'H3 -> Web Port 80 method POST',
+        t11 = self.h3.cmd('curl --max-time 5 -d "foo=bar&bin=baz" http://100.0.0.45:80')
         if self._parseWget(t11):
             print 'Success!'
         else:
             print 'Failed!'
 
-        print 'H3 -> Web Port 22 ',
-        t12 = self.h3.cmd('wget -T 3 --tries=1 100.0.0.40:22')
+        print 'H3 -> Web Port 22 method POST',
+        t12 = self.h3.cmd('curl --max-time 5 -d "foo=bar&bin=baz" http://100.0.0.45:22')
         if self._parseWget(t12):
             print 'Success!'
         else:
             print 'Failed!'
             
-        print 'H3 -> Web Port 53 ',
-        t13 = self.h3.cmd('wget -T 3 --tries=1 100.0.0.40:53')
+        print 'H3 -> Web Port 53 method POST',
+        t13 = self.h3.cmd('curl --max-time 5 -d "foo=bar&bin=baz" http://100.0.0.45:53')
         if self._parseWget(t13):
             print 'Success!'
         else:
             print 'Failed!'
             
-        print 'H3 -> Web Port 88 ',
-        t14 = self.h3.cmd('wget -T 3 --tries=1 100.0.0.40:88')
+        print 'H3 -> Web Port 88 method POST',
+        t14 = self.h3.cmd('curl --max-time 5 -d "foo=bar&bin=baz" http://100.0.0.45:88')
         if self._parseWget(t14):
             print 'Success!'
         else:
             print 'Failed!'
             
-        print 'H3 -> Web Port 115 ',
-        t15 = self.h3.cmd('wget -T 3 --tries=1 100.0.0.40:115')
+        print 'H3 -> Web Port 115 method POST',
+        t15 = self.h3.cmd('curl --max-time 5 -d "foo=bar&bin=baz" http://100.0.0.45:115')
         if self._parseWget(t15):
             print 'Success!'
         else:
             print 'Failed!'
             
-        print 'H3 -> Web Port 123 ',
-        t16 = self.h3.cmd('wget -T 3 --tries=1 100.0.0.40:123')
+        print 'H3 -> Web Port 123 method POST',
+        t16 = self.h3.cmd('curl --max-time 5 -d "foo=bar&bin=baz" http://100.0.0.45:123')
         if self._parseWget(t16):
             print 'Success!'
         else:
             print 'Failed!'
             
-        print 'H3 -> Web Port 156 ',
-        t17 = self.h3.cmd('wget -T 3 --tries=1 100.0.0.40:156')
+        print 'H3 -> Web Port 156 method POST',
+        t17 = self.h3.cmd('curl --max-time 5 -d "foo=bar&bin=baz" http://100.0.0.45:156')
         if self._parseWget(t17):
             print 'Success!'
         else:
             print 'Failed!'
             
-        print 'H3 -> Web Port 199 ',
-        t18 = self.h3.cmd('wget -T 3 --tries=1 100.0.0.40:199')
+        print 'H3 -> Web Port 199 method POST',
+        t18 = self.h3.cmd('curl --max-time 5 -d "foo=bar&bin=baz" http://100.0.0.45:199')
         if self._parseWget(t18):
             print 'Success!'
         else:
             print 'Failed!'
             
-        print 'H3 -> Web Port 220 ',
-        t19 = self.h3.cmd('wget -T 3 --tries=1 100.0.0.40:220')
+        print 'H3 -> Web Port 220 method POST',
+        t19 = self.h3.cmd('curl --max-time 5 -d "foo=bar&bin=baz" http://100.0.0.45:220')
         if self._parseWget(t19):
             print 'Success!'
         else:
             print 'Failed!'
             
-        print 'H3 -> Web Port 443 ',
-        t20 = self.h3.cmd('wget -T 3 --tries=1 100.0.0.40:443')
+        print 'H3 -> Web Port 443 method POST',
+        t20 = self.h3.cmd('curl --max-time 5 -d "foo=bar&bin=baz" http://100.0.0.45:443')
         if self._parseWget(t20):
+            print 'Success!'
+        else:
+            print 'Failed!'
+
+        print 'H1 -> Web Port 80 method GET',
+        t21 = self.h1.cmd('curl --max-time 5 http://100.0.0.45:80')
+        if self._parseWget(t21):
+            print 'Success!'
+        else:
+            print 'Failed!'
+
+        print 'H1 -> Web Port 80 method HEAD',
+        t22 = self.h1.cmd('curl --max-time 5 -I http://100.0.0.45:80')
+        if self._parseWget(t22):
+            print 'Success!'
+        else:
+            print 'Failed!'
+
+        print 'H3 -> Web Port 80 method GET',
+        t23 = self.h3.cmd('curl --max-time 5 http://100.0.0.45:80')
+        if self._parseWget(t23):
+            print 'Success!'
+        else:
+            print 'Failed!'
+
+        print 'H3 -> Web Port 80 method HEAD',
+        t24 = self.h3.cmd('curl --max-time 5 -I http://100.0.0.45:80')
+        if self._parseWget(t24):
             print 'Success!'
         else:
             print 'Failed!'
             
         print "DNS Tests Done!"
         
-        print "Storing data in Phase_1_Report"
+        print "Storing data in Phase_2_Report"
         
-        self.file.write("H1 wget Web Port 80\n")
+        self.file.write("H1 post Web Port 80\n")
         self.file.write(t1)
-        self.file.write("H1 wget Web Port 22\n")
+        self.file.write("H1 post Web Port 22\n")
         self.file.write(t2)
-        self.file.write("H1 wget Web Port 53\n")
+        self.file.write("H1 post Web Port 53\n")
         self.file.write(t3)
-        self.file.write("H1 wget Web Port 88\n")
+        self.file.write("H1 post Web Port 88\n")
         self.file.write(t4)
-        self.file.write("H1 wget Web Port 115\n")
+        self.file.write("H1 post Web Port 115\n")
         self.file.write(t5)
-        self.file.write("H1 wget Web Port 123\n")
+        self.file.write("H1 post Web Port 123\n")
         self.file.write(t6)
-        self.file.write("H1 wget Web Port 156\n")
+        self.file.write("H1 post Web Port 156\n")
         self.file.write(t7)
-        self.file.write("H1 wget Web Port 199\n")
+        self.file.write("H1 post Web Port 199\n")
         self.file.write(t8)
-        self.file.write("H1 wget Web Port 220\n")
+        self.file.write("H1 post Web Port 220\n")
         self.file.write(t9)
-        self.file.write("H1 wget Web Port 443\n")
+        self.file.write("H1 post Web Port 443\n")
         self.file.write(t10)
-        self.file.write("H3 wget Web Port 80\n")
+        self.file.write("H3 post Web Port 80\n")
         self.file.write(t11)
-        self.file.write("H3 wget Web Port 22\n")
+        self.file.write("H3 post Web Port 22\n")
         self.file.write(t12)
-        self.file.write("H3 wget Web Port 53\n")
+        self.file.write("H3 post Web Port 53\n")
         self.file.write(t13)
-        self.file.write("H3 wget Web Port 88\n")
+        self.file.write("H3 post Web Port 88\n")
         self.file.write(t14)
-        self.file.write("H3 wget Web Port 115\n")
+        self.file.write("H3 post Web Port 115\n")
         self.file.write(t15)
-        self.file.write("H3 wget Web Port 123\n")
+        self.file.write("H3 post Web Port 123\n")
         self.file.write(t16)     
-        self.file.write("H3 wget Web Port 156\n")
+        self.file.write("H3 post Web Port 156\n")
         self.file.write(t17)
-        self.file.write("H3 wget Web Port 199\n")
+        self.file.write("H3 post Web Port 199\n")
         self.file.write(t18)
-        self.file.write("H3 wget Web Port 220\n")
+        self.file.write("H3 post Web Port 220\n")
         self.file.write(t19)
-        self.file.write("H3 wget Web Port 443\n")
+        self.file.write("H3 post Web Port 443\n")
         self.file.write(t20)
+        self.file.write("H3 post Web Port 80\n")
+        self.file.write(t21)
+        self.file.write("H3 head Web Port 80\n")
+        self.file.write(t22)
+        self.file.write("H3 get Web Port 80\n")
+        self.file.write(t23)
+        self.file.write("H3 head Web Port 80\n")
+        self.file.write(t24)
         x=0
         
         if self._parseWget(t1):
@@ -668,152 +598,168 @@ class autotest(object):
         if self._parseWget(t20):
            x=x+1
            self.count(True)
+        if self._parseWget(t21):
+           x=x+1
+           self.count(True)
+        if self._parseWget(t22):
+           x=x+1
+           self.count(True)
+        if self._parseWget(t23):
+           x=x+1
+           self.count(True)
+        if self._parseWget(t24):
+           x=x+1
+           self.count(True)
     
-        print "Succes rate: " + str(x)+"/20"
-        print "Expected rate: 2/20"     
+        print "Succes rate: " + str(x)+"/24"
+        print "Expected rate: 2/24"     
         self.ws1.cmd('kill %python')
+        self.ws2.cmd('kill %python')
+        self.ws3.cmd('kill %python')
     
     def dns(self):
         self.ds1.cmd('python dns_server.py 100.0.0.20 &')
+        self.ds2.cmd('python dns_server.py 100.0.0.21 &')
+        self.ds3.cmd('python dns_server.py 100.0.0.22 &')
         
         print 'DNS Testing (Only port 53)'
         print '(SRC -> DST Port X) Success!/Failed!'
-        
+        time.sleep(5)
         print 'H1 -> DNS Port 80 ',
-        t1 = self.h1.cmd('dig -p 80 @100.0.0.20 team4.ik2220.com')
+        t1 = self.h1.cmd('dig -p 80 @100.0.0.25 team4.ik2220.com')
         if self._parseDig(t1):
             print 'Success!'
         else:
             print 'Failed!'
 
         print 'H1 -> DNS Port 22 ',
-        t2 = self.h1.cmd('dig -p 22 @100.0.0.20 team4.ik2220.com')
+        t2 = self.h1.cmd('dig -p 22 @100.0.0.25 team4.ik2220.com')
         if self._parseDig(t2):
             print 'Success!'
         else:
             print 'Failed!'
             
         print 'H1 -> DNS Port 53 ',
-        t3 = self.h1.cmd('dig -p 53 @100.0.0.20 team4.ik2220.com')
+        t3 = self.h1.cmd('dig -p 53 @100.0.0.25 team4.ik2220.com')
         if self._parseDig(t3):
             print 'Success!'
         else:
             print 'Failed!'
             
         print 'H1 -> DNS Port 88 ',
-        t4 = self.h1.cmd('dig -p 88 @100.0.0.20 team4.ik2220.com')
+        t4 = self.h1.cmd('dig -p 88 @100.0.0.25 team4.ik2220.com')
         if self._parseDig(t4):
             print 'Success!'
         else:
             print 'Failed!'
             
         print 'H1 -> DNS Port 115 ',
-        t5 = self.h1.cmd('dig -p 115 @100.0.0.20 team4.ik2220.com')
+        t5 = self.h1.cmd('dig -p 115 @100.0.0.25 team4.ik2220.com')
         if self._parseDig(t5):
             print 'Success!'
         else:
             print 'Failed!'
             
         print 'H1 -> DNS Port 123 ',
-        t6 = self.h1.cmd('dig -p 123 @100.0.0.20 team4.ik2220.com')
+        t6 = self.h1.cmd('dig -p 123 @100.0.0.25 team4.ik2220.com')
         if self._parseDig(t6):
             print 'Success!'
         else:
             print 'Failed!'
             
         print 'H1 -> DNS Port 156 ',
-        t7 = self.h1.cmd('dig -p 156 @100.0.0.20 team4.ik2220.com')
+        t7 = self.h1.cmd('dig -p 156 @100.0.0.25 team4.ik2220.com')
         if self._parseDig(t7):
             print 'Success!'
         else:
             print 'Failed!'
             
         print 'H1 -> DNS Port 199 ',
-        t8 = self.h1.cmd('dig -p 199 @100.0.0.20 team4.ik2220.com')
+        t8 = self.h1.cmd('dig -p 199 @100.0.0.25 team4.ik2220.com')
         if self._parseDig(t8):
             print 'Success!'
         else:
             print 'Failed!'
             
         print 'H1 -> DNS Port 220 ',
-        t9 = self.h1.cmd('dig -p 220 @100.0.0.20 team4.ik2220.com')
+        t9 = self.h1.cmd('dig -p 220 @100.0.0.25 team4.ik2220.com')
         if self._parseDig(t9):
             print 'Success!'
         else:
             print 'Failed!'
             
         print 'H1 -> DNS Port 443 ',
-        t10 = self.h1.cmd('dig -p 443 @100.0.0.20 team4.ik2220.com')
+        t10 = self.h1.cmd('dig -p 443 @100.0.0.25 team4.ik2220.com')
         if self._parseDig(t10):
             print 'Success!'
         else:
             print 'Failed!'
         
         print 'H3 -> DNS Port 80 ',
-        t11 = self.h3.cmd('dig -p 80 @100.0.0.20 team4.ik2220.com')
+        t11 = self.h3.cmd('dig -p 80 @100.0.0.25 team4.ik2220.com')
         if self._parseDig(t11):
             print 'Success!'
         else:
             print 'Failed!'
 
         print 'H3 -> DNS Port 22 ',
-        t12 = self.h3.cmd('dig -p 22 @100.0.0.20 team4.ik2220.com')
+        t12 = self.h3.cmd('dig -p 22 @100.0.0.25 team4.ik2220.com')
         if self._parseDig(t12):
             print 'Success!'
         else:
             print 'Failed!'
             
         print 'H3 -> DNS Port 53 ',
-        t13 = self.h3.cmd('dig -p 53 @100.0.0.20 team4.ik2220.com')
+        t13 = self.h3.cmd('dig -p 53 @100.0.0.25 team4.ik2220.com')
         if self._parseDig(t13):
             print 'Success!'
         else:
             print 'Failed!'
             
         print 'H3 -> DNS Port 88 ',
-        t14 = self.h3.cmd('dig -p 88 @100.0.0.20 team4.ik2220.com')
+        t14 = self.h3.cmd('dig -p 88 @100.0.0.25 team4.ik2220.com')
         if self._parseDig(t14):
             print 'Success!'
         else:
             print 'Failed!'
             
         print 'H3 -> DNS Port 115 ',
-        t15 = self.h3.cmd('dig -p 115 @100.0.0.20 team4.ik2220.com')
+        t15 = self.h3.cmd('dig -p 115 @100.0.0.25 team4.ik2220.com')
         if self._parseDig(t15):
             print 'Success!'
         else:
             print 'Failed!'
             
         print 'H3 -> DNS Port 123 ',
-        t16 = self.h3.cmd('dig -p 123 @100.0.0.20 team4.ik2220.com')
+        t16 = self.h3.cmd('dig -p 123 @100.0.0.25 team4.ik2220.com')
         if self._parseDig(t16):
             print 'Success!'
         else:
             print 'Failed!'
             
         print 'H3 -> DNS Port 156 ',
-        t17 = self.h3.cmd('dig -p 156 @100.0.0.20 team4.ik2220.com')
+        t17 = self.h3.cmd('dig -p 156 @100.0.0.25 team4.ik2220.com')
         if self._parseDig(t17):
             print 'Success!'
         else:
             print 'Failed!'
             
         print 'H3 -> DNS Port 199 ',
-        t18 = self.h3.cmd('dig -p 199 @100.0.0.20 team4.ik2220.com')
+        t18 = self.h3.cmd('dig -p 199 @100.0.0.25 team4.ik2220.com')
         if self._parseDig(t18):
             print 'Success!'
         else:
             print 'Failed!'
             
         print 'H3 -> DNS Port 220 ',
-        t19 = self.h3.cmd('dig -p 220 @100.0.0.20 team4.ik2220.com')
+        t19 = self.h3.cmd('dig -p 220 @100.0.0.25 team4.ik2220.com')
         if self._parseDig(t19):
             print 'Success!'
         else:
             print 'Failed!'
             
         print 'H3 -> DNS Port 443 ',
-        t20 = self.h3.cmd('dig -p 443 @100.0.0.20 team4.ik2220.com')
+        t20 = self.h3.cmd('dig -p 443 @100.0.0.25 team4.ik2220.com')
         if self._parseDig(t20):
             print 'Success!'
         else:
@@ -932,6 +878,8 @@ class autotest(object):
         print "Succes rate: " + str(x)+"/20"
         print "Expected rate: 2/20"     
         self.ds1.cmd('kill %python')
+        self.ds2.cmd('kill %python')
+        self.ds3.cmd('kill %python')
     
     def test(self):
         
