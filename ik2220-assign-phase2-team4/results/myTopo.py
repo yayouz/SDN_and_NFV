@@ -6,6 +6,7 @@ from mininet.net import Mininet
 from mininet.node import Controller, RemoteController
 from mininet.log import setLogLevel, info
 from testing import autotest
+
 def int2dpid( dpid ):
       try:
         dpid = hex( dpid )[ 2: ]
@@ -28,8 +29,9 @@ class MyTopo( Topo ):
         # Add hosts and switches
         Host1 = self.addHost( 'h1',ip='100.0.0.10/24' )
         Host2 = self.addHost( 'h2',ip='100.0.0.11/24'  )
-        Host3 = self.addHost( 'h3',ip='100.0.0.50/24'  )
-        Host4 = self.addHost( 'h4',ip='100.0.0.51/24'  )
+        Host3 = self.addHost( 'h3',ip='10.0.0.50/24')
+        Host4 = self.addHost( 'h4',ip='10.0.0.51/24' )
+        Insp = self.addHost('insp',ip='100.0.0.30/24')
         DNS1 = self.addHost( 'ds1',ip='100.0.0.20/24' )
         DNS2 = self.addHost( 'ds2',ip='100.0.0.21/24' )
         DNS3 = self.addHost( 'ds3',ip='100.0.0.22/24' )
@@ -57,6 +59,7 @@ class MyTopo( Topo ):
         self.addLink(ids,Switch2)
         self.addLink(Firewall2,Switch2)
         self.addLink(ids,lb2)
+        self.addLink(ids,Insp)
         self.addLink(lb2,Switch4)
         self.addLink(lb1,Switch3)
         self.addLink(Firewall2,napt)
@@ -77,12 +80,14 @@ topos = { 'mytopo': ( lambda: MyTopo() ) }
 def run():
   net=Mininet(topo=MyTopo(),controller=RemoteController('c0',ip='127.0.0.1',port=6633),switch=OVSSwitch)
 
+  h3 = net.getNodeByName('h3')
+  h3.cmd('route add default gw 10.0.0.1 dev h3-eth0')
+  h4 = net.getNodeByName('h4')
+  h4.cmd('route add default gw 10.0.0.1 dev h4-eth0') 
+
   net.start()
-  print "Testing network connectivity....."
-  print "Takes a long time, see result in already generated report"
   testing=autotest(net)
   psuccess= testing.test()
-  print("Total success rate: "+str(psuccess)+"%")
   CLI(net)
   net.stop()
 
