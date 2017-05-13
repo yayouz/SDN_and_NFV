@@ -19,7 +19,7 @@ class autotest(object):
         self.ws2 = self.net.get('ws2')
         self.ws3 = self.net.get('ws3')
         self.insp = self.net.get('insp')
-        self.file = open('Phase_2_Report','w')
+        #self.file = open('Phase_2_Report','w')
     
     def _parsePing(self, pingOutput ):
         "Parse ping output and return packets sent, received."
@@ -65,7 +65,6 @@ class autotest(object):
 
     def ping(self):
         print 'Ping Test (SRC -> DST Success!/Failed!)'
-        time.sleep(5)
         print 'H1 -> H3 ',
         t1 = self.h1.cmd('ping -c 1 10.0.0.50')
         if self._parsePing(t1):
@@ -79,7 +78,7 @@ class autotest(object):
         else:
             print 'Failed!'
         print 'H1 -> LoadBalance2',
-        t3 = self.h1.cmd('ping -c 2 100.0.0.45')
+        t3 = self.h1.cmd('ping -c 4 100.0.0.45')
         if self._parsePing(t3):
             print 'Success!'
         else:
@@ -103,13 +102,13 @@ class autotest(object):
         else:
             print 'Failed!'
         print 'H2 -> LoadBalance1',
-        t7 = self.h2.cmd('ping -c 2 100.0.0.25')
+        t7 = self.h2.cmd('ping -c 4 100.0.0.25')
         if self._parsePing(t7):
             print 'Success!'
         else:
             print 'Failed!'
         print 'H2 -> LoadBalance2',
-        t8 = self.h2.cmd('ping -c 2 100.0.0.45')
+        t8 = self.h2.cmd('ping -c 4 100.0.0.45')
         if self._parsePing(t8):
             print 'Success!'
         else:
@@ -184,7 +183,7 @@ class autotest(object):
         else:
             print 'Failed!'
         print 'H4 -> LoadBalance2',
-        t20 = self.h4.cmd('ping -c 2 100.0.0.45')
+        t20 = self.h4.cmd('ping -c 1 100.0.0.45')
         if self._parsePing(t20):
             print 'Success!'
         else:
@@ -192,51 +191,6 @@ class autotest(object):
 
         print "Storing data in Phase_2_Report"
         
-        self.file.write("Pinging H1 to H3\n")
-        self.file.write(t1)
-        self.file.write("Pinging H1 to LoadBalancer1\n")
-        self.file.write(t2)
-        self.file.write("Pinging H1 to LoadBalancer2\n")
-        self.file.write(t3)
-        self.file.write("Pinging H2 to H3\n")
-        self.file.write(t4)
-        
-        
-        self.file.write("Pinging H1 to H4\n")
-        self.file.write(t5)
-        self.file.write("Pinging H2 to H4\n")
-        self.file.write(t6)
-        self.file.write("Pinging H2 to LoadBalancer1\n")
-        self.file.write(t7)
-        self.file.write("Pinging H2 to LoadBalancer2\n")
-        self.file.write(t8)
-        self.file.write("Pinging H3 to H1\n")
-        self.file.write(t9)
-        self.file.write("Pinging H3 to H2\n")
-        self.file.write(t10)
-        
-        self.file.write("Pinging H4 to H1\n")
-        self.file.write(t11)
-        self.file.write("Pinging H4 to H2\n")
-        self.file.write(t12)
-        self.file.write("Pinging H4 to H3\n")
-        self.file.write(t13)
-        self.file.write("Pinging H3 to H4\n")
-        self.file.write(t14)
-        self.file.write("Pinging H1 to H2\n")
-        self.file.write(t15)
-        self.file.write("Pinging H2 to H1\n")
-        self.file.write(t16)
-        
-        self.file.write("Pinging H3 to LoadBalancer1\n")
-        self.file.write(t17)
-        self.file.write("Pinging H3 to LoadBalancer2\n")
-        self.file.write(t18)
-        self.file.write("Pinging H4 to LoadBalancer1\n")
-        self.file.write(t19)
-        self.file.write("Pinging H4 to LoadBalancer2\n")
-        self.file.write(t20)
-            
         print "Calculating Success Rate"
         
         x=0
@@ -312,11 +266,12 @@ class autotest(object):
         self.ws1.cmd("sudo python Httpserver.py 80 &")
         self.ws2.cmd("sudo python Httpserver2.py 80 &")
         self.ws3.cmd("sudo python Httpserver3.py 80 &")
-        self.insp.cmd("tcpdump -w insp.pcap &")
-        print 'TCP Testing (Only port 80)'
-        print '(SRC -> DST Port X) Success!/Failed!'
+        self.insp.cmd("tcpdump -i eth0 -w insp.cap &")
         time.sleep(5)
 
+        print 'TCP Testing (Only port 80)'
+        print '(SRC -> DST Port X) Success!/Failed!'
+        
         print 'H1 -> Web Port 80 method POST',
         t1 = self.h1.cmd('curl --max-time 5 -d "foo=bar&bin=baz" http://100.0.0.45:80')
         if self._parseWget(t1):
@@ -465,7 +420,7 @@ class autotest(object):
             print 'Failed!'
 
         print 'H1 -> Web Port 80 method HEAD',
-        t22 = self.h1.cmd('curl --max-time 5 -I http://100.0.0.45:80')
+        t22 = self.h1.cmd('curl --max-time -I 5 http://100.0.0.45:80')
         if self._parseWget(t22):
             print 'Success!'
         else:
@@ -479,7 +434,7 @@ class autotest(object):
             print 'Failed!'
 
         print 'H3 -> Web Port 80 method HEAD',
-        t24 = self.h3.cmd('curl --max-time 5 -I http://100.0.0.45:80')
+        t24 = self.h3.cmd('curl --max-time -I 5 http://100.0.0.45:80')
         if self._parseWget(t24):
             print 'Success!'
         else:
@@ -487,56 +442,6 @@ class autotest(object):
             
         print "DNS Tests Done!"
         
-        print "Storing data in Phase_2_Report"
-        
-        self.file.write("H1 post Web Port 80\n")
-        self.file.write(t1)
-        self.file.write("H1 post Web Port 22\n")
-        self.file.write(t2)
-        self.file.write("H1 post Web Port 53\n")
-        self.file.write(t3)
-        self.file.write("H1 post Web Port 88\n")
-        self.file.write(t4)
-        self.file.write("H1 post Web Port 115\n")
-        self.file.write(t5)
-        self.file.write("H1 post Web Port 123\n")
-        self.file.write(t6)
-        self.file.write("H1 post Web Port 156\n")
-        self.file.write(t7)
-        self.file.write("H1 post Web Port 199\n")
-        self.file.write(t8)
-        self.file.write("H1 post Web Port 220\n")
-        self.file.write(t9)
-        self.file.write("H1 post Web Port 443\n")
-        self.file.write(t10)
-        self.file.write("H3 post Web Port 80\n")
-        self.file.write(t11)
-        self.file.write("H3 post Web Port 22\n")
-        self.file.write(t12)
-        self.file.write("H3 post Web Port 53\n")
-        self.file.write(t13)
-        self.file.write("H3 post Web Port 88\n")
-        self.file.write(t14)
-        self.file.write("H3 post Web Port 115\n")
-        self.file.write(t15)
-        self.file.write("H3 post Web Port 123\n")
-        self.file.write(t16)     
-        self.file.write("H3 post Web Port 156\n")
-        self.file.write(t17)
-        self.file.write("H3 post Web Port 199\n")
-        self.file.write(t18)
-        self.file.write("H3 post Web Port 220\n")
-        self.file.write(t19)
-        self.file.write("H3 post Web Port 443\n")
-        self.file.write(t20)
-        self.file.write("H3 post Web Port 80\n")
-        self.file.write(t21)
-        self.file.write("H3 head Web Port 80\n")
-        self.file.write(t22)
-        self.file.write("H3 get Web Port 80\n")
-        self.file.write(t23)
-        self.file.write("H3 head Web Port 80\n")
-        self.file.write(t24)
         x=0
         
         if self._parseWget(t1):
@@ -617,7 +522,8 @@ class autotest(object):
         self.ws1.cmd('kill %python')
         self.ws2.cmd('kill %python')
         self.ws3.cmd('kill %python')
-    
+        self.insp.cmd('kill %python')
+
     def dns(self):
         self.ds1.cmd('python dns_server.py 100.0.0.20 &')
         self.ds2.cmd('python dns_server.py 100.0.0.21 &')
@@ -625,7 +531,7 @@ class autotest(object):
         
         print 'DNS Testing (Only port 53)'
         print '(SRC -> DST Port X) Success!/Failed!'
-        time.sleep(5)
+        
         print 'H1 -> DNS Port 80 ',
         t1 = self.h1.cmd('dig -p 80 @100.0.0.25 team4.ik2220.com')
         if self._parseDig(t1):
@@ -767,50 +673,6 @@ class autotest(object):
             print 'Failed!'
             
         print "DNS Tests Done!"
-        
-        print "Storing data in Phase_1_Report"
-        
-        self.file.write("H1 Query DNS Port 80\n")
-        self.file.write(t1)
-        self.file.write("H1 Query DNS Port 22\n")
-        self.file.write(t2)
-        self.file.write("H1 Query DNS Port 53\n")
-        self.file.write(t3)
-        self.file.write("H1 Query DNS Port 88\n")
-        self.file.write(t4)
-        self.file.write("H1 Query DNS Port 115\n")
-        self.file.write(t5)
-        self.file.write("H1 Query DNS Port 123\n")
-        self.file.write(t6)
-        self.file.write("H1 Query DNS Port 156\n")
-        self.file.write(t7)
-        self.file.write("H1 Query DNS Port 199\n")
-        self.file.write(t8)
-        self.file.write("H1 Query DNS Port 220\n")
-        self.file.write(t9)
-        self.file.write("H1 Query DNS Port 443\n")
-        self.file.write(t10)
-        self.file.write("H3 Query DNS Port 80\n")
-        self.file.write(t11)
-        self.file.write("H3 Query DNS Port 22\n")
-        self.file.write(t12)
-        self.file.write("H3 Query DNS Port 53\n")
-        self.file.write(t13)
-        self.file.write("H3 Query DNS Port 88\n")
-        self.file.write(t14)
-        self.file.write("H3 Query DNS Port 115\n")
-        self.file.write(t15)
-        self.file.write("H3 Query DNS Port 123\n")
-        self.file.write(t16)     
-        self.file.write("H3 Query DNS Port 156\n")
-        self.file.write(t17)
-        self.file.write("H3 Query DNS Port 199\n")
-        self.file.write(t18)
-        self.file.write("H3 Query DNS Port 220\n")
-        self.file.write(t19)
-        self.file.write("H3 Query DNS Port 443\n")
-        self.file.write(t20)
-
 
         print "Calculating Success Rate"
         x = 0
@@ -884,22 +746,22 @@ class autotest(object):
     
     def test(self):
         
-        self.file.write("ICMP TEST (pingall mininet)\n")
+        #self.file.write("ICMP TEST (pingall mininet)\n")
         self.ping()
         
-        self.file.write('\n\n\n\n')
-        self.file.write("DNS TEST (Testing 10 different ports from PbZ & PrZ")
+        #self.file.write('\n\n\n\n')
+        #self.file.write("DNS TEST (Testing 10 different ports from PbZ & PrZ")
         self.dns()
         
-        self.file.write('\n\n\n\n')
-        self.file.write("TCP TEST (Testing 10 different ports from PbZ & PrZ")
+        #self.file.write('\n\n\n\n')
+        #self.file.write("TCP TEST (Testing 10 different ports from PbZ & PrZ")
         self.http()
         
         psuccess=100*self.success/self.total
         
-        self.file.write('\n\n')
-        self.file.write("Total Success Rate:"+str(psuccess)+"%")
+        #self.file.write('\n\n')
+        #self.file.write("Total Success Rate:"+str(psuccess)+"%")
 
 
-        self.file.close()
+        #self.file.close()
         return psuccess

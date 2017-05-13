@@ -1,6 +1,10 @@
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
+from SocketServer import ThreadingMixIn
+import threading
 import SocketServer
 
+class ThreadingServer(ThreadingMixIn,HTTPServer):
+    pass
 class Handler(BaseHTTPRequestHandler):
     def _set_headers(self):
         self.send_response(200)
@@ -20,7 +24,7 @@ class Handler(BaseHTTPRequestHandler):
         self._set_headers()
         self.wfile.write("<html><body><h1>ws3,POST!</h1><pre>" + data + "</pre></body></html>")
         
-def run(server_class=HTTPServer, handler_class=Handler, port=80):
+def run(server_class=ThreadingServer, handler_class=Handler, port=80):
     server_address = ('100.0.0.42', port)
     httpd = server_class(server_address, handler_class)
     print 'Starting http...'

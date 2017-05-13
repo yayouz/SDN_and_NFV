@@ -5,10 +5,10 @@ on the server side:
 
 on the client side:
 Send a GET request:
-    curl http://100.0.0.40(41or42):80
+    curl http://100.0.0.45:80
 Send a POST request:
-    curl -d "foo=bar&bin=baz" http://100.0.0.40(41or42):80
+    curl -d "foo=bar&bin=baz" http://100.0.0.45:80
 Send a HEAD request:
-    curl -I http://100.0.0.40(41or42):80
+    curl -I http://100.0.0.45:80
 
 

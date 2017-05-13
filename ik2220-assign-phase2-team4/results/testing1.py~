@@ -1,7 +1,7 @@
 import os
 import re
 import signal
-import time
+from time import sleep
 
 class autotest(object):
     def __init__ (self,net):
@@ -25,7 +25,7 @@ class autotest(object):
         "Parse ping output and return packets sent, received."
         # Check for downed link
         if 'connect: Network is unreachable' in pingOutput:
-            return False
+            return (1, 0)
         r = r'(\d+) packets transmitted, (\d+) received'
         m = re.search( r, pingOutput )
         if m is None:
@@ -33,9 +33,9 @@ class autotest(object):
             error( '*** Error: could not parse ping output: %s\n' %
                    pingOutput )
             
-            return False
+            return (1, 0)
         sent, received = int( m.group( 1 ) ), int( m.group( 2 ) )
-        if received!=0:
+        if sent==received:
           return True
         else:
           return False
@@ -65,7 +65,6 @@ class autotest(object):
 
     def ping(self):
         print 'Ping Test (SRC -> DST Success!/Failed!)'
-        time.sleep(5)
         print 'H1 -> H3 ',
         t1 = self.h1.cmd('ping -c 1 10.0.0.50')
         if self._parsePing(t1):
@@ -79,7 +78,7 @@ class autotest(object):
         else:
             print 'Failed!'
         print 'H1 -> LoadBalance2',
-        t3 = self.h1.cmd('ping -c 2 100.0.0.45')
+        t3 = self.h1.cmd('ping -c 4 100.0.0.45')
         if self._parsePing(t3):
             print 'Success!'
         else:
@@ -103,13 +102,13 @@ class autotest(object):
         else:
             print 'Failed!'
         print 'H2 -> LoadBalance1',
-        t7 = self.h2.cmd('ping -c 2 100.0.0.25')
+        t7 = self.h2.cmd('ping -c 4 100.0.0.25')
         if self._parsePing(t7):
             print 'Success!'
         else:
             print 'Failed!'
         print 'H2 -> LoadBalance2',
-        t8 = self.h2.cmd('ping -c 2 100.0.0.45')
+        t8 = self.h2.cmd('ping -c 4 100.0.0.45')
         if self._parsePing(t8):
             print 'Success!'
         else:
@@ -165,7 +164,7 @@ class autotest(object):
             print 'Success!'
         else:
             print 'Failed!'
-        print 'H3 -> LoadBalance1',
+         print 'H3 -> LoadBalance1',
         t17 = self.h3.cmd('ping -c 2 100.0.0.25')
         if self._parsePing(t17):
             print 'Success!'
@@ -177,7 +176,7 @@ class autotest(object):
             print 'Success!'
         else:
             print 'Failed!'
-        print 'H4 -> LoadBalance1',
+         print 'H4 -> LoadBalance1',
         t19 = self.h4.cmd('ping -c 2 100.0.0.25')
         if self._parsePing(t19):
             print 'Success!'
@@ -312,7 +311,7 @@ class autotest(object):
         self.ws1.cmd("sudo python Httpserver.py 80 &")
         self.ws2.cmd("sudo python Httpserver2.py 80 &")
         self.ws3.cmd("sudo python Httpserver3.py 80 &")
-        self.insp.cmd("tcpdump -w insp.pcap &")
+        self.insp.cmd("tcpdump -i eth0 -w /pcap.cap")
         print 'TCP Testing (Only port 80)'
         print '(SRC -> DST Port X) Success!/Failed!'
         time.sleep(5)
@@ -465,7 +464,7 @@ class autotest(object):
             print 'Failed!'
 
         print 'H1 -> Web Port 80 method HEAD',
-        t22 = self.h1.cmd('curl --max-time 5 -I http://100.0.0.45:80')
+        t22 = self.h1.cmd('curl --max-time -I 5 http://100.0.0.45:80')
         if self._parseWget(t22):
             print 'Success!'
         else:
@@ -479,7 +478,7 @@ class autotest(object):
             print 'Failed!'
 
         print 'H3 -> Web Port 80 method HEAD',
-        t24 = self.h3.cmd('curl --max-time 5 -I http://100.0.0.45:80')
+        t24 = self.h3.cmd('curl --max-time -I 5 http://100.0.0.45:80')
         if self._parseWget(t24):
             print 'Success!'
         else:
@@ -625,142 +624,142 @@ class autotest(object):
         
         print 'DNS Testing (Only port 53)'
         print '(SRC -> DST Port X) Success!/Failed!'
-        time.sleep(5)
+        
         print 'H1 -> DNS Port 80 ',
-        t1 = self.h1.cmd('dig -p 80 @100.0.0.25 team4.ik2220.com')
+        t1 = self.h1.cmd('dig -p 80 @100.0.0.20 team4.ik2220.com')
         if self._parseDig(t1):
             print 'Success!'
         else:
             print 'Failed!'
 
         print 'H1 -> DNS Port 22 ',
-        t2 = self.h1.cmd('dig -p 22 @100.0.0.25 team4.ik2220.com')
+        t2 = self.h1.cmd('dig -p 22 @100.0.0.20 team4.ik2220.com')
         if self._parseDig(t2):
             print 'Success!'
         else:
             print 'Failed!'
             
         print 'H1 -> DNS Port 53 ',
-        t3 = self.h1.cmd('dig -p 53 @100.0.0.25 team4.ik2220.com')
+        t3 = self.h1.cmd('dig -p 53 @100.0.0.20 team4.ik2220.com')
         if self._parseDig(t3):
             print 'Success!'
         else:
             print 'Failed!'
             
         print 'H1 -> DNS Port 88 ',
-        t4 = self.h1.cmd('dig -p 88 @100.0.0.25 team4.ik2220.com')
+        t4 = self.h1.cmd('dig -p 88 @100.0.0.20 team4.ik2220.com')
         if self._parseDig(t4):
             print 'Success!'
         else:
             print 'Failed!'
             
         print 'H1 -> DNS Port 115 ',
-        t5 = self.h1.cmd('dig -p 115 @100.0.0.25 team4.ik2220.com')
+        t5 = self.h1.cmd('dig -p 115 @100.0.0.20 team4.ik2220.com')
         if self._parseDig(t5):
             print 'Success!'
         else:
             print 'Failed!'
             
         print 'H1 -> DNS Port 123 ',
-        t6 = self.h1.cmd('dig -p 123 @100.0.0.25 team4.ik2220.com')
+        t6 = self.h1.cmd('dig -p 123 @100.0.0.20 team4.ik2220.com')
         if self._parseDig(t6):
             print 'Success!'
         else:
             print 'Failed!'
             
         print 'H1 -> DNS Port 156 ',
-        t7 = self.h1.cmd('dig -p 156 @100.0.0.25 team4.ik2220.com')
+        t7 = self.h1.cmd('dig -p 156 @100.0.0.20 team4.ik2220.com')
         if self._parseDig(t7):
             print 'Success!'
         else:
             print 'Failed!'
             
         print 'H1 -> DNS Port 199 ',
-        t8 = self.h1.cmd('dig -p 199 @100.0.0.25 team4.ik2220.com')
+        t8 = self.h1.cmd('dig -p 199 @100.0.0.20 team4.ik2220.com')
         if self._parseDig(t8):
             print 'Success!'
         else:
             print 'Failed!'
             
         print 'H1 -> DNS Port 220 ',
-        t9 = self.h1.cmd('dig -p 220 @100.0.0.25 team4.ik2220.com')
+        t9 = self.h1.cmd('dig -p 220 @100.0.0.20 team4.ik2220.com')
         if self._parseDig(t9):
             print 'Success!'
         else:
             print 'Failed!'
             
         print 'H1 -> DNS Port 443 ',
-        t10 = self.h1.cmd('dig -p 443 @100.0.0.25 team4.ik2220.com')
+        t10 = self.h1.cmd('dig -p 443 @100.0.0.20 team4.ik2220.com')
         if self._parseDig(t10):
             print 'Success!'
         else:
             print 'Failed!'
         
         print 'H3 -> DNS Port 80 ',
-        t11 = self.h3.cmd('dig -p 80 @100.0.0.25 team4.ik2220.com')
+        t11 = self.h3.cmd('dig -p 80 @100.0.0.20 team4.ik2220.com')
         if self._parseDig(t11):
             print 'Success!'
         else:
             print 'Failed!'
 
         print 'H3 -> DNS Port 22 ',
-        t12 = self.h3.cmd('dig -p 22 @100.0.0.25 team4.ik2220.com')
+        t12 = self.h3.cmd('dig -p 22 @100.0.0.20 team4.ik2220.com')
         if self._parseDig(t12):
             print 'Success!'
         else:
             print 'Failed!'
             
         print 'H3 -> DNS Port 53 ',
-        t13 = self.h3.cmd('dig -p 53 @100.0.0.25 team4.ik2220.com')
+        t13 = self.h3.cmd('dig -p 53 @100.0.0.20 team4.ik2220.com')
         if self._parseDig(t13):
             print 'Success!'
         else:
             print 'Failed!'
             
         print 'H3 -> DNS Port 88 ',
-        t14 = self.h3.cmd('dig -p 88 @100.0.0.25 team4.ik2220.com')
+        t14 = self.h3.cmd('dig -p 88 @100.0.0.20 team4.ik2220.com')
         if self._parseDig(t14):
             print 'Success!'
         else:
             print 'Failed!'
             
         print 'H3 -> DNS Port 115 ',
-        t15 = self.h3.cmd('dig -p 115 @100.0.0.25 team4.ik2220.com')
+        t15 = self.h3.cmd('dig -p 115 @100.0.0.20 team4.ik2220.com')
         if self._parseDig(t15):
             print 'Success!'
         else:
             print 'Failed!'
             
         print 'H3 -> DNS Port 123 ',
-        t16 = self.h3.cmd('dig -p 123 @100.0.0.25 team4.ik2220.com')
+        t16 = self.h3.cmd('dig -p 123 @100.0.0.20 team4.ik2220.com')
         if self._parseDig(t16):
             print 'Success!'
         else:
             print 'Failed!'
             
         print 'H3 -> DNS Port 156 ',
-        t17 = self.h3.cmd('dig -p 156 @100.0.0.25 team4.ik2220.com')
+        t17 = self.h3.cmd('dig -p 156 @100.0.0.20 team4.ik2220.com')
         if self._parseDig(t17):
             print 'Success!'
         else:
             print 'Failed!'
             
         print 'H3 -> DNS Port 199 ',
-        t18 = self.h3.cmd('dig -p 199 @100.0.0.25 team4.ik2220.com')
+        t18 = self.h3.cmd('dig -p 199 @100.0.0.20 team4.ik2220.com')
         if self._parseDig(t18):
             print 'Success!'
         else:
             print 'Failed!'
             
         print 'H3 -> DNS Port 220 ',
-        t19 = self.h3.cmd('dig -p 220 @100.0.0.25 team4.ik2220.com')
+        t19 = self.h3.cmd('dig -p 220 @100.0.0.20 team4.ik2220.com')
         if self._parseDig(t19):
             print 'Success!'
         else:
             print 'Failed!'
             
         print 'H3 -> DNS Port 443 ',
-        t20 = self.h3.cmd('dig -p 443 @100.0.0.25 team4.ik2220.com')
+        t20 = self.h3.cmd('dig -p 443 @100.0.0.20 team4.ik2220.com')
         if self._parseDig(t20):
             print 'Success!'
         else:
