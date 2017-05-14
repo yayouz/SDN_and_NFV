@@ -32,8 +32,8 @@ src_eth1-> InputRateEth1 -> ETH_class;
 	Ip_class[0]->HTTPCounter->Http_class;
 	        //PUT
 		Http_class[0]->SQL_class;
-			SQL_class[0,1,2,3,4]->dst_eth2;
-			SQL_class[5]->Blocked->dst_insp;
+			SQL_class[0,1,2,3,4]->Blocked->dst_insp;
+			SQL_class[5]->dst_eth2;
 		//POST
 		Http_class[1]->dst_eth2;
 		//GET  HEAD OPTIONS TRACE DELETE CONNECT
