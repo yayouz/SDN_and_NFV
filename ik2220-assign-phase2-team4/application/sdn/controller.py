@@ -6,7 +6,7 @@ from subprocess import Popen
 
 log = core.getLogger()
 
-path = "./ext/"
+path = "/opt/ik2220/pox/ext/"
 
 class controller(object):
     def __init__(self):

@@ -11,14 +11,14 @@ src_eth2 :: FromDevice(napt-eth2);
 dst_eth1 :: Queue -> OutputRateEth1 -> ToDevice(napt-eth1);
 dst_eth2 :: Queue -> OutputRateEth2 -> ToDevice(napt-eth2);
 
-AddressInfo(PRZ 10.0.0.1/24 00:00:00:22:20:01);
-AddressInfo(DMZ 100.0.0.1/24 00:00:00:22:20:02);
+AddressInfo(PRZ 10.0.0.1/32 00:00:00:22:20:01);
+AddressInfo(DMZ 100.0.0.1/32 00:00:00:22:20:02);
 
 ARPQ_eth1 :: ARPQuerier(DMZ) -> dst_eth1;
 ARPQ_eth2 :: ARPQuerier(PRZ) -> dst_eth2;
 
-ARPR_eth1 :: ARPResponder(100.0.0.1/24 00:00:00:22:20:01) -> ARPResponderEth1 -> dst_eth1;
-ARPR_eth2 :: ARPResponder(10.0.0.1/24 00:00:00:22:20:02) -> ARPResponderEth2 -> dst_eth2;
+ARPR_eth1 :: ARPResponder(100.0.0.1/32 00:00:00:22:20:01) -> ARPResponderEth1 -> dst_eth1;
+ARPR_eth2 :: ARPResponder(10.0.0.1/32 00:00:00:22:20:02) -> ARPResponderEth2 -> dst_eth2;
 
 ETH_PRZ :: Classifier(12/0806 20/0001, 12/0806 20/0002, 12/0800,-);
 ETH_DMZ :: Classifier(12/0806 20/0001, 12/0806 20/0002, 12/0800,-);
