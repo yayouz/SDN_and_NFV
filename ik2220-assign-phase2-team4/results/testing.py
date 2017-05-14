@@ -318,168 +318,168 @@ class autotest(object):
         time.sleep(5)
 
         print 'H1 -> Web Port 80 method POST',
-        t1 = self.h1.cmd('curl --max-time 5 -d "foo=bar&bin=baz" http://100.0.0.45:80')
+        t1 = self.h1.cmd('curl --max-time 10 -d "foo=bar&bin=baz" http://100.0.0.45:80')
         if self._parseWget(t1):
             print 'Success!'
         else:
             print 'Failed!'
 
         print 'H1 -> Web Port 22 method POST',
-        t2 = self.h1.cmd('curl --max-time 5 -d "foo=bar&bin=baz" http://100.0.0.45:22')
+        t2 = self.h1.cmd('curl --max-time 10 -d "foo=bar&bin=baz" http://100.0.0.45:22')
         if self._parseWget(t2):
             print 'Success!'
         else:
             print 'Failed!'
             
         print 'H1 -> Web Port 53 method POST',
-        t3 = self.h1.cmd('curl --max-time 5 -d "foo=bar&bin=baz" http://100.0.0.45:53')
+        t3 = self.h1.cmd('curl --max-time 10 -d "foo=bar&bin=baz" http://100.0.0.45:53')
         if self._parseWget(t3):
             print 'Success!'
         else:
             print 'Failed!'
             
         print 'H1 -> Web Port 88 method POST',
-        t4 = self.h1.cmd('curl --max-time 5 -d "foo=bar&bin=baz" http://100.0.0.45:88')
+        t4 = self.h1.cmd('curl --max-time 10 -d "foo=bar&bin=baz" http://100.0.0.45:88')
         if self._parseWget(t4):
             print 'Success!'
         else:
             print 'Failed!'
             
         print 'H1 -> Web Port 115 method POST',
-        t5 = self.h1.cmd('curl --max-time 5 -d "foo=bar&bin=baz" http://100.0.0.45:115')
+        t5 = self.h1.cmd('curl --max-time 10 -d "foo=bar&bin=baz" http://100.0.0.45:115')
         if self._parseWget(t5):
             print 'Success!'
         else:
             print 'Failed!'
             
         print 'H1 -> Web Port 123  method POST',
-        t6 = self.h1.cmd('curl --max-time 5 -d "foo=bar&bin=baz" http://100.0.0.45:123')
+        t6 = self.h1.cmd('curl --max-time 10 -d "foo=bar&bin=baz" http://100.0.0.45:123')
         if self._parseWget(t6):
             print 'Success!'
         else:
             print 'Failed!'
             
         print 'H1 -> Web Port 156  method POST',
-        t7 = self.h1.cmd('curl --max-time 5 -d "foo=bar&bin=baz" http://100.0.0.45:156')
+        t7 = self.h1.cmd('curl --max-time 10 -d "foo=bar&bin=baz" http://100.0.0.45:156')
         if self._parseWget(t7):
             print 'Success!'
         else:
             print 'Failed!'
             
         print 'H1 -> Web Port 199 method POST',
-        t8 = self.h1.cmd('curl --max-time 5 -d "foo=bar&bin=baz" http://100.0.0.45:199')
+        t8 = self.h1.cmd('curl --max-time 10 -d "foo=bar&bin=baz" http://100.0.0.45:199')
         if self._parseWget(t8):
             print 'Success!'
         else:
             print 'Failed!'
             
         print 'H1 -> Web Port 220 method POST',
-        t9 = self.h1.cmd('curl --max-time 5 -d "foo=bar&bin=baz" http://100.0.0.45:220')
+        t9 = self.h1.cmd('curl --max-time 10 -d "foo=bar&bin=baz" http://100.0.0.45:220')
         if self._parseWget(t9):
             print 'Success!'
         else:
             print 'Failed!'
             
         print 'H1 -> Web Port 443 method POST',
-        t10 = self.h1.cmd('curl --max-time 5 -d "foo=bar&bin=baz" http://100.0.0.45:443')
+        t10 = self.h1.cmd('curl --max-time 10 -d "foo=bar&bin=baz" http://100.0.0.45:443')
         if self._parseWget(t10):
             print 'Success!'
         else:
             print 'Failed!'
         
         print 'H3 -> Web Port 80 method POST',
-        t11 = self.h3.cmd('curl --max-time 5 -d "foo=bar&bin=baz" http://100.0.0.45:80')
+        t11 = self.h3.cmd('curl --max-time 10 -d "foo=bar&bin=baz" http://100.0.0.45:80')
         if self._parseWget(t11):
             print 'Success!'
         else:
             print 'Failed!'
 
         print 'H3 -> Web Port 22 method POST',
-        t12 = self.h3.cmd('curl --max-time 5 -d "foo=bar&bin=baz" http://100.0.0.45:22')
+        t12 = self.h3.cmd('curl --max-time 10 -d "foo=bar&bin=baz" http://100.0.0.45:22')
         if self._parseWget(t12):
             print 'Success!'
         else:
             print 'Failed!'
             
         print 'H3 -> Web Port 53 method POST',
-        t13 = self.h3.cmd('curl --max-time 5 -d "foo=bar&bin=baz" http://100.0.0.45:53')
+        t13 = self.h3.cmd('curl --max-time 10 -d "foo=bar&bin=baz" http://100.0.0.45:53')
         if self._parseWget(t13):
             print 'Success!'
         else:
             print 'Failed!'
             
         print 'H3 -> Web Port 88 method POST',
-        t14 = self.h3.cmd('curl --max-time 5 -d "foo=bar&bin=baz" http://100.0.0.45:88')
+        t14 = self.h3.cmd('curl --max-time 10 -d "foo=bar&bin=baz" http://100.0.0.45:88')
         if self._parseWget(t14):
             print 'Success!'
         else:
             print 'Failed!'
             
         print 'H3 -> Web Port 115 method POST',
-        t15 = self.h3.cmd('curl --max-time 5 -d "foo=bar&bin=baz" http://100.0.0.45:115')
+        t15 = self.h3.cmd('curl --max-time 10 -d "foo=bar&bin=baz" http://100.0.0.45:115')
         if self._parseWget(t15):
             print 'Success!'
         else:
             print 'Failed!'
             
         print 'H3 -> Web Port 123 method POST',
-        t16 = self.h3.cmd('curl --max-time 5 -d "foo=bar&bin=baz" http://100.0.0.45:123')
+        t16 = self.h3.cmd('curl --max-time 10 -d "foo=bar&bin=baz" http://100.0.0.45:123')
         if self._parseWget(t16):
             print 'Success!'
         else:
             print 'Failed!'
             
         print 'H3 -> Web Port 156 method POST',
-        t17 = self.h3.cmd('curl --max-time 5 -d "foo=bar&bin=baz" http://100.0.0.45:156')
+        t17 = self.h3.cmd('curl --max-time 10 -d "foo=bar&bin=baz" http://100.0.0.45:156')
         if self._parseWget(t17):
             print 'Success!'
         else:
             print 'Failed!'
             
         print 'H3 -> Web Port 199 method POST',
-        t18 = self.h3.cmd('curl --max-time 5 -d "foo=bar&bin=baz" http://100.0.0.45:199')
+        t18 = self.h3.cmd('curl --max-time 10 -d "foo=bar&bin=baz" http://100.0.0.45:199')
         if self._parseWget(t18):
             print 'Success!'
         else:
             print 'Failed!'
             
         print 'H3 -> Web Port 220 method POST',
-        t19 = self.h3.cmd('curl --max-time 5 -d "foo=bar&bin=baz" http://100.0.0.45:220')
+        t19 = self.h3.cmd('curl --max-time 10 -d "foo=bar&bin=baz" http://100.0.0.45:220')
         if self._parseWget(t19):
             print 'Success!'
         else:
             print 'Failed!'
             
         print 'H3 -> Web Port 443 method POST',
-        t20 = self.h3.cmd('curl --max-time 5 -d "foo=bar&bin=baz" http://100.0.0.45:443')
+        t20 = self.h3.cmd('curl --max-time 10 -d "foo=bar&bin=baz" http://100.0.0.45:443')
         if self._parseWget(t20):
             print 'Success!'
         else:
             print 'Failed!'
 
         print 'H1 -> Web Port 80 method GET',
-        t21 = self.h1.cmd('curl --max-time 5 http://100.0.0.45:80')
+        t21 = self.h1.cmd('curl --max-time 10 http://100.0.0.45:80')
         if self._parseWget(t21):
             print 'Success!'
         else:
             print 'Failed!'
 
         print 'H1 -> Web Port 80 method HEAD',
-        t22 = self.h1.cmd('curl --max-time 5 -I http://100.0.0.45:80')
+        t22 = self.h1.cmd('curl --max-time 10 -I http://100.0.0.45:80')
         if self._parseWget(t22):
             print 'Success!'
         else:
             print 'Failed!'
 
         print 'H3 -> Web Port 80 method GET',
-        t23 = self.h3.cmd('curl --max-time 5 http://100.0.0.45:80')
+        t23 = self.h3.cmd('curl --max-time 10 http://100.0.0.45:80')
         if self._parseWget(t23):
             print 'Success!'
         else:
             print 'Failed!'
 
         print 'H3 -> Web Port 80 method HEAD',
-        t24 = self.h3.cmd('curl --max-time 5 -I http://100.0.0.45:80')
+        t24 = self.h3.cmd('curl --max-time 10 -I http://100.0.0.45:80')
         if self._parseWget(t24):
             print 'Success!'
         else:
