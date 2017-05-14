@@ -315,7 +315,7 @@ class autotest(object):
         self.insp.cmd("tcpdump -w insp.pcap &")
         print 'TCP Testing (Only port 80)'
         print '(SRC -> DST Port X) Success!/Failed!'
-        time.sleep(5)
+        time.sleep(10)
 
         print 'H1 -> Web Port 80 method POST',
         t1 = self.h1.cmd('curl --max-time 20 -d "foo=bar&bin=baz" http://100.0.0.45:80')
@@ -546,13 +546,13 @@ class autotest(object):
             print 'Success!'
         else:
             print 'Failed!'
-        print 'H1 -> Web Port 80 method PUT BAD_PUT',
+        print 'H1 -> Web Port 80 method PUT GOOD_PUT',
         t35 = self.h1.cmd('curl -X PUT --max-time 20 -d "BAD_PUT" http://100.0.0.45:80')
         if self._parseWget(t35):
             print 'Success!'
         else:
             print 'Failed!'
-        print 'H3 -> Web Port 80 method PUT BAD_PUT',
+        print 'H3 -> Web Port 80 method PUT GOOD_PUT',
         t36 = self.h3.cmd('curl -X PUT --max-time 20 -d "BAD_PUT" http://100.0.0.45:80')
         if self._parseWget(t36):
             print 'Success!'
@@ -631,9 +631,9 @@ class autotest(object):
         self.file.write(t33)
         self.file.write("H3 put DELETE Web Port 80\n")
         self.file.write(t34)
-        self.file.write("H3 put BAD_PUT Web Port 80\n")
+        self.file.write("H3 put GOOD_PUT Web Port 80\n")
         self.file.write(t35)
-        self.file.write("H3 put BAD_PUT Web Port 80\n")
+        self.file.write("H3 put GOOD_PUT Web Port 80\n")
         self.file.write(t36)
         x=0
         
@@ -747,7 +747,7 @@ class autotest(object):
            self.count(True)
     
         print "Succes rate: " + str(x)+"/36"
-        print "Expected rate: 12/36"     
+        print "Expected rate: 4/36"     
         self.ws1.cmd('kill %python')
         self.ws2.cmd('kill %python')
         self.ws3.cmd('kill %python')

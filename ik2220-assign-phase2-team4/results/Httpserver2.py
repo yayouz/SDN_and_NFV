@@ -23,7 +23,7 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         self._set_headers()
-        self.wfile.write("<html><body><h1>ws2,Hello!</h1></body></html>")
+        self.wfile.write("<html><body><h1>Success!ws2,Hello!</h1></body></html>")
 
     def do_HEAD(self):
         self._set_headers()
@@ -32,7 +32,7 @@ class Handler(BaseHTTPRequestHandler):
         length = int(self.headers['Content-Length']) 
         data = self.rfile.read(length) 
         self._set_headers()
-        self.wfile.write("<html><body><h1>ws2,POST!</h1><pre>" + data + "</pre></body></html>")
+        self.wfile.write("<html><body><h1>Success!ws2,POST!</h1><pre>" + data + "</pre></body></html>")
         
 def run(server_class=ThreadingServer, handler_class=Handler, port=80):
     server_address = ('100.0.0.41', port)
