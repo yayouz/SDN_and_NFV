@@ -47,7 +47,7 @@ class autotest(object):
             return True
 
     def _parseWget(self, wgetOutput ):
-         r = r'(POST)'
+         r = r'(Success)'
          m = re.findall( r, wgetOutput )
          if m:
              return True
@@ -352,14 +352,14 @@ class autotest(object):
         else:
             print 'Failed!'
             
-        print 'H1 -> Web Port 123  method POST',
+        print 'H1 -> Web Port 123 method POST',
         t6 = self.h1.cmd('curl --max-time 20 -d "foo=bar&bin=baz" http://100.0.0.45:123')
         if self._parseWget(t6):
             print 'Success!'
         else:
             print 'Failed!'
             
-        print 'H1 -> Web Port 156  method POST',
+        print 'H1 -> Web Port 156 method POST',
         t7 = self.h1.cmd('curl --max-time 20 -d "foo=bar&bin=baz" http://100.0.0.45:156')
         if self._parseWget(t7):
             print 'Success!'
@@ -484,8 +484,82 @@ class autotest(object):
             print 'Success!'
         else:
             print 'Failed!'
+
+        print 'H1 -> Web Port 80 method PUT cat /etc/passwd',
+        t25 = self.h1.cmd('curl -X PUT --max-time 20 -d "cat /etc/passwd" http://100.0.0.45:80')
+        if self._parseWget(t25):
+            print 'Success!'
+        else:
+            print 'Failed!'
+        print 'H1 -> Web Port 80 method PUT cat /var/log/',
+        t26 = self.h1.cmd('curl -X PUT --max-time 20 -d "cat /var/log/" http://100.0.0.45:80')
+        if self._parseWget(t26):
+            print 'Success!'
+        else:
+            print 'Failed!'
+        print 'H1 -> Web Port 80 method PUT INSERT',
+        t27 = self.h1.cmd('curl -X PUT --max-time 20 -d "INSERT" http://100.0.0.45:80')
+        if self._parseWget(t27):
+            print 'Success!'
+        else:
+            print 'Failed!'
+        print 'H1 -> Web Port 80 method PUT UPDATE',
+        t28 = self.h1.cmd('curl -X PUT --max-time 20 -d "UPDATE" http://100.0.0.45:80')
+        if self._parseWget(t28):
+            print 'Success!'
+        else:
+            print 'Failed!'
+        print 'H1 -> Web Port 80 method PUT DELETE',
+        t29 = self.h1.cmd('curl -X PUT --max-time 20 -d "DELETE" http://100.0.0.45:80')
+        if self._parseWget(t29):
+            print 'Success!'
+        else:
+            print 'Failed!'
             
-        print "DNS Tests Done!"
+        print 'H3 -> Web Port 80 method PUT cat /etc/passwd',
+        t30 = self.h3.cmd('curl -X PUT --max-time 20 -d "cat /etc/passwd" http://100.0.0.45:80')
+        if self._parseWget(t30):
+            print 'Success!'
+        else:
+            print 'Failed!'
+        print 'H3 -> Web Port 80 method PUT cat /var/log/',
+        t31 = self.h3.cmd('curl -X PUT --max-time 20 -d "cat /var/log/" http://100.0.0.45:80')
+        if self._parseWget(t31):
+            print 'Success!'
+        else:
+            print 'Failed!'
+        print 'H3 -> Web Port 80 method PUT INSERT',
+        t32 = self.h3.cmd('curl -X PUT --max-time 20 -d "INSERT" http://100.0.0.45:80')
+        if self._parseWget(t32):
+            print 'Success!'
+        else:
+            print 'Failed!'
+        print 'H3 -> Web Port 80 method PUT UPDATE',
+        t33 = self.h3.cmd('curl -X PUT --max-time 20 -d "UPDATE" http://100.0.0.45:80')
+        if self._parseWget(t33):
+            print 'Success!'
+        else:
+            print 'Failed!'
+        print 'H3 -> Web Port 80 method PUT DELETE',
+        t34 = self.h3.cmd('curl -X PUT --max-time 20 -d "DELETE" http://100.0.0.45:80')
+        if self._parseWget(t34):
+            print 'Success!'
+        else:
+            print 'Failed!'
+        print 'H1 -> Web Port 80 method PUT BAD_PUT',
+        t35 = self.h1.cmd('curl -X PUT --max-time 20 -d "BAD_PUT" http://100.0.0.45:80')
+        if self._parseWget(t35):
+            print 'Success!'
+        else:
+            print 'Failed!'
+        print 'H3 -> Web Port 80 method PUT BAD_PUT',
+        t36 = self.h3.cmd('curl -X PUT --max-time 20 -d "BAD_PUT" http://100.0.0.45:80')
+        if self._parseWget(t36):
+            print 'Success!'
+        else:
+            print 'Failed!'
+
+        print "WEB Tests Done!"
         
         print "Storing data in Phase_2_Report"
         
@@ -537,6 +611,30 @@ class autotest(object):
         self.file.write(t23)
         self.file.write("H3 head Web Port 80\n")
         self.file.write(t24)
+        self.file.write("H1 put cat /etc/passwd Web Port 80\n")
+        self.file.write(t25)
+        self.file.write("H1 put cat /var/log/ Web Port 80\n")
+        self.file.write(t26)
+        self.file.write("H1 put INSERT Web Port 80\n")
+        self.file.write(t27)
+        self.file.write("H1 put UPDATE Web Port 80\n")
+        self.file.write(t28)
+        self.file.write("H1 put DELETE Web Port 80\n")
+        self.file.write(t29)
+        self.file.write("H3 put cat /etc/passwd Web Port 80\n")
+        self.file.write(t30)
+        self.file.write("H3 put cat /var/log/ Web Port 80\n")
+        self.file.write(t31)
+        self.file.write("H3 put INSERT Web Port 80\n")
+        self.file.write(t32)
+        self.file.write("H3 put UPDATE Web Port 80\n")
+        self.file.write(t33)
+        self.file.write("H3 put DELETE Web Port 80\n")
+        self.file.write(t34)
+        self.file.write("H3 put BAD_PUT Web Port 80\n")
+        self.file.write(t35)
+        self.file.write("H3 put BAD_PUT Web Port 80\n")
+        self.file.write(t36)
         x=0
         
         if self._parseWget(t1):
@@ -611,9 +709,45 @@ class autotest(object):
         if self._parseWget(t24):
            x=x+1
            self.count(True)
+        if self._parseWget(t25):
+           x=x+1
+           self.count(True)
+        if self._parseWget(t26):
+           x=x+1
+           self.count(True)
+        if self._parseWget(t27):
+           x=x+1
+           self.count(True)
+        if self._parseWget(t28):
+           x=x+1
+           self.count(True)
+        if self._parseWget(t29):
+           x=x+1
+           self.count(True)
+        if self._parseWget(t30):
+           x=x+1
+           self.count(True)
+        if self._parseWget(t31):
+           x=x+1
+           self.count(True)
+        if self._parseWget(t32):
+           x=x+1
+           self.count(True)
+        if self._parseWget(t33):
+           x=x+1
+           self.count(True)
+        if self._parseWget(t34):
+           x=x+1
+           self.count(True)
+        if self._parseWget(t35):
+           x=x+1
+           self.count(True)
+        if self._parseWget(t36):
+           x=x+1
+           self.count(True)
     
-        print "Succes rate: " + str(x)+"/24"
-        print "Expected rate: 2/24"     
+        print "Succes rate: " + str(x)+"/36"
+        print "Expected rate: 12/36"     
         self.ws1.cmd('kill %python')
         self.ws2.cmd('kill %python')
         self.ws3.cmd('kill %python')

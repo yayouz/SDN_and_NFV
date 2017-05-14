@@ -7,8 +7,19 @@ on the client side:
 Send a GET request:
     curl http://100.0.0.45:80
 Send a POST request:
-    curl -d "foo=bar&bin=baz" http://100.0.0.45:80
+    curl -X POST -d "Post" http://100.0.0.45:80
 Send a HEAD request:
     curl -I http://100.0.0.45:80
+Send a put request:
+   curl -X PUT -d "cat /etc/passwod" http://100.0.0.45:80
+Send a put request:
+   curl -X PUT -d "cat /var/log/" http://100.0.0.45:80
+Send a put request:
+   curl -X PUT -d "INSERT" http://100.0.0.45:80
+Send a put request:
+   curl -X PUT -d "UPDATE" http://100.0.0.45:80
+Send a put request:
+   curl -X PUT -d "DELETE" http://100.0.0.45:80
+
 
 

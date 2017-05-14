@@ -11,6 +11,16 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header('Content-type', 'text/html')
         self.end_headers()
 
+    def do_PUT(self):
+        print "----- SOMETHING WAS PUT!! ------"
+        self._set_headers()
+        print self.headers
+
+        length = self.headers['Content-Length']
+        data = self.rfile.read(int(length))
+        print data
+        self.wfile.write("<html><body><h1>Success!ws2,PUT!</h1></body></html>")
+
     def do_GET(self):
         self._set_headers()
         self.wfile.write("<html><body><h1>ws2,Hello!</h1></body></html>")

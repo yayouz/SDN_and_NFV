@@ -11,7 +11,7 @@ dst_insp :: Queue -> OutputRateEth3 -> ToDevice(ids-eth3);
 
 ETH_class :: Classifier(12/0800,-);
 Ip_class :: IPClassifier(dst tcp www or https,-);//port 80 and tcp opt ack,-);
-Http_class :: Classifier(66/505554,    //PUT
+Http_class :: Classifier(66/505554,    //PUT 
 			 66/504F5354,  //POST
 			 66/474554,    //GET
 			 66/48454144,  //HEAD
@@ -20,16 +20,24 @@ Http_class :: Classifier(66/505554,    //PUT
 			 66/44454c455445,//DELETE
 			 66/434f4e4e454354,//CONNECT
 			 -);
+SQL_class :: Classifier(209/636174202f6574632f706173737764,    //cat /etc/passwd
+			209/636174202f7661722f6c6f672f,        //cat /var/log/
+			208/494e53455254,   //INSERT
+			208/555044415445,   //UPDATE
+			208/44454c455445,   //DELETE
+			-);
 
 src_eth1-> InputRateEth1 -> ETH_class;
   ETH_class[0]->CheckIPHeader(14)->Ip_class;
 	Ip_class[0]->HTTPCounter->Http_class;
 	        //PUT
-		Http_class[0]->dst_eth2;
+		Http_class[0]->SQL_class;
+			SQL_class[0,1,2,3,4]->dst_eth2;
+			SQL_class[5]->Blocked->dst_insp;
 		//POST
 		Http_class[1]->dst_eth2;
 		//GET  HEAD OPTIONS TRACE DELETE CONNECT
-		Http_class[2,3,4,5,6,7]-> Blocked ->dst_insp;
+		Http_class[2,3,4,5,6,7]->Blocked->dst_insp;
 		//others
 		Http_class[8]->dst_eth2;
 	Ip_class[1]->dst_eth2;
